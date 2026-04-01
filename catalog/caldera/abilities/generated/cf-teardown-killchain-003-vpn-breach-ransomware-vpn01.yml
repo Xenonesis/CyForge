@@ -1,0 +1,18 @@
+- id: cf-teardown-killchain-003-vpn-breach-ransomware-vpn01
+  name: '[CF] Teardown machine: vpn01 (killchain-003-vpn-breach-ransomware)'
+  description: Cleanly tear down and remove the hosted environment for killchain-003-vpn-breach-ransomware-vpn01.
+  tactic: defense-evasion
+  technique:
+    attack_id: T1070
+    name: Indicator Removal
+  platforms:
+    linux:
+      sh:
+        command: "set -e\necho '[CF] Tearing down: killchain-003-vpn-breach-ransomware-vpn01'\n\
+          WORKDIR=\"/opt/cyberforge/killchain-003-vpn-breach-ransomware-vpn01\"\n\
+          if [ -d \"$WORKDIR/killchains/killchain-003-vpn-breach-ransomware/vpn01\"\
+          \ ]; then\n  cd \"$WORKDIR/killchains/killchain-003-vpn-breach-ransomware/vpn01\"\
+          \n  if [ -f \"teardown.sh\" ]; then\n    chmod +x teardown.sh\n    ./teardown.sh\n\
+          \  else\n    echo '[CF] No teardown script found — stopping any Docker containers\
+          \ if present'\n    docker compose down --remove-orphans 2>/dev/null || true\n\
+          \  fi\nfi\nrm -rf \"$WORKDIR\"\necho '[CF] Teardown complete: killchain-003-vpn-breach-ransomware-vpn01'"

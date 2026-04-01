@@ -1,0 +1,19 @@
+- id: cf-teardown-killchain-002-phishing-to-adcs-dc02
+  name: '[CF] Teardown machine: dc02 (killchain-002-phishing-to-adcs)'
+  description: Cleanly tear down and remove the hosted environment for killchain-002-phishing-to-adcs-dc02.
+  tactic: defense-evasion
+  technique:
+    attack_id: T1070
+    name: Indicator Removal
+  platforms:
+    windows:
+      psh:
+        command: "$ErrorActionPreference = \"SilentlyContinue\"\nWrite-Host \"[CF]\
+          \ Tearing down: killchain-002-phishing-to-adcs-dc02\"\n$WorkDir = \"C:\\\
+          \\CyberForge\\\\killchain-002-phishing-to-adcs-dc02\"\nif (Test-Path \"\
+          $WorkDir\\\\\" + \"killchains\\\\killchain-002-phishing-to-adcs\\\\dc02\"\
+          ) {\n  Set-Location \"$WorkDir\\\\\" + \"killchains\\\\killchain-002-phishing-to-adcs\\\
+          \\dc02\"\n  if (Test-Path \".\\\\\" + \"teardown.ps1\") {\n    powershell\
+          \ -ExecutionPolicy Bypass -File .\\\\teardown.ps1\n  }\n}\nRemove-Item -Recurse\
+          \ -Force $WorkDir -ErrorAction SilentlyContinue\nWrite-Host \"[CF] Teardown\
+          \ complete: killchain-002-phishing-to-adcs-dc02\""

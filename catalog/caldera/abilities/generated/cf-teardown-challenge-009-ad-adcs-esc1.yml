@@ -1,0 +1,18 @@
+- id: cf-teardown-challenge-009-ad-adcs-esc1
+  name: '[CF] Teardown: Active Directory ADCS ESC1'
+  description: Cleanly tear down and remove the hosted environment for challenge-009-ad-adcs-esc1.
+  tactic: defense-evasion
+  technique:
+    attack_id: T1070
+    name: Indicator Removal
+  platforms:
+    windows:
+      psh:
+        command: "$ErrorActionPreference = \"SilentlyContinue\"\nWrite-Host \"[CF]\
+          \ Tearing down: challenge-009-ad-adcs-esc1\"\n$WorkDir = \"C:\\\\CyberForge\\\
+          \\challenge-009-ad-adcs-esc1\"\nif (Test-Path \"$WorkDir\\\\\" + \"challenges\\\
+          \\challenge-009-ad-adcs-esc1\") {\n  Set-Location \"$WorkDir\\\\\" + \"\
+          challenges\\\\challenge-009-ad-adcs-esc1\"\n  if (Test-Path \".\\\\\" +\
+          \ \"teardown.ps1\") {\n    powershell -ExecutionPolicy Bypass -File .\\\\\
+          teardown.ps1\n  }\n}\nRemove-Item -Recurse -Force $WorkDir -ErrorAction\
+          \ SilentlyContinue\nWrite-Host \"[CF] Teardown complete: challenge-009-ad-adcs-esc1\""

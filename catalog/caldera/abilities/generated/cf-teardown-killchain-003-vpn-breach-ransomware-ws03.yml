@@ -1,0 +1,19 @@
+- id: cf-teardown-killchain-003-vpn-breach-ransomware-ws03
+  name: '[CF] Teardown machine: ws03 (killchain-003-vpn-breach-ransomware)'
+  description: Cleanly tear down and remove the hosted environment for killchain-003-vpn-breach-ransomware-ws03.
+  tactic: defense-evasion
+  technique:
+    attack_id: T1070
+    name: Indicator Removal
+  platforms:
+    windows:
+      psh:
+        command: "$ErrorActionPreference = \"SilentlyContinue\"\nWrite-Host \"[CF]\
+          \ Tearing down: killchain-003-vpn-breach-ransomware-ws03\"\n$WorkDir = \"\
+          C:\\\\CyberForge\\\\killchain-003-vpn-breach-ransomware-ws03\"\nif (Test-Path\
+          \ \"$WorkDir\\\\\" + \"killchains\\\\killchain-003-vpn-breach-ransomware\\\
+          \\ws03\") {\n  Set-Location \"$WorkDir\\\\\" + \"killchains\\\\killchain-003-vpn-breach-ransomware\\\
+          \\ws03\"\n  if (Test-Path \".\\\\\" + \"teardown.ps1\") {\n    powershell\
+          \ -ExecutionPolicy Bypass -File .\\\\teardown.ps1\n  }\n}\nRemove-Item -Recurse\
+          \ -Force $WorkDir -ErrorAction SilentlyContinue\nWrite-Host \"[CF] Teardown\
+          \ complete: killchain-003-vpn-breach-ransomware-ws03\""

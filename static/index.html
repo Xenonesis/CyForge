@@ -28,7 +28,15 @@
           <span>Dark Mode</span>
         </label>
       </div>
+      
+      <nav class="nav-tabs" style="margin-top: 1rem; display: flex; gap: 1rem; border-bottom: 1px solid var(--line); padding-bottom: 0.5rem;">
+        <button id="navDashboard" class="btn btn-ghost active">Dashboard</button>
+        <button id="navGuide" class="btn btn-ghost">Guide</button>
+        <button id="navAbout" class="btn btn-ghost">About</button>
+      </nav>
     </header>
+
+    <div id="dashboardView">
 
     <section class="panel operation-strip">
       <div class="chip-group">
@@ -61,7 +69,7 @@
       </div>
       <div class="field">
         <label for="userId">Operator ID</label>
-        <input id="userId" value="student-01" />
+        <input id="userId" value="student-01" required minlength="1" autocomplete="username" placeholder="e.g. student-01" />
       </div>
       <div class="field">
         <label for="challengeSelect">Challenge</label>
@@ -141,6 +149,76 @@
           <button id="auditNextBtn" class="btn btn-ghost">Next</button>
         </div>
       </section>
+    </div>
+    </div> <!-- /dashboardView -->
+
+    <!-- GUIDE VIEW -->
+    <div id="guideView" class="panel" style="display: none;">
+      <h2>Operator Guide</h2>
+      <p style="margin-top: 1rem; margin-bottom: 2rem;">Welcome to the CyberForge Control Deck. Here’s how to operate the lab provisioning system.</p>
+      
+      <div class="dual-grid">
+        <div class="panel">
+          <h3 class="eyebrow">Deploying a Challenge</h3>
+          <ol style="padding-left: 1.5rem; color: var(--ink);">
+            <li style="margin-bottom: 0.5rem;"><strong>Select an Operator ID</strong>: Your unique identifier. This groups your sessions together.</li>
+            <li style="margin-bottom: 0.5rem;"><strong>Filter the Catalog</strong>: Use the type, domain, or difficulty filters to find relevant labs.</li>
+            <li style="margin-bottom: 0.5rem;"><strong>Pick a Challenge</strong>: Select your desired challenge from the dropdown.</li>
+            <li><strong>Click Deploy</strong>: The system will provision your dedicated environment. Wait for the state to turn <span class="state-pill state-active">ACTIVE</span>.</li>
+          </ol>
+        </div>
+        
+        <div class="panel">
+          <h3 class="eyebrow">Managing Active Sessions</h3>
+          <ul style="padding-left: 1.5rem; color: var(--ink);">
+            <li style="margin-bottom: 0.5rem;"><strong>Reset Lab</strong>: If your environment becomes unstable, hit the Reset button to rebuild it from scratch.</li>
+            <li style="margin-bottom: 0.5rem;"><strong>IP Access</strong>: Note the Target and Attacker IPs — you'll need these to interact with the challenge.</li>
+            <li><strong>Concurrency</strong>: Only one active mock-lab per user is supported at a time the real VirtualBox provisioner supports multiples depending on infrastructure limits.</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="panel" style="margin-top: 1rem; border-color: var(--warning);">
+        <h3 class="eyebrow" style="color: var(--warning);">Troubleshooting Deployments</h3>
+        <p style="margin-top: 0.5rem; color: var(--ink);">If your deploy gets stuck or shows <span class="state-pill state-failed">FAILED</span>, check the <strong>Audit Explorer</strong> tab below for the specific error logged by the orchestration backend. Usually, it's caused by a missing VirtualBox template or a GitLab connectivity issue.</p>
+      </div>
+    </div>
+
+    <!-- ABOUT VIEW -->
+    <div id="aboutView" class="panel" style="display: none;">
+      <h2>About CyberForge</h2>
+      <div style="margin-top: 1rem; color: var(--ink); line-height: 1.6;">
+        <p style="margin-bottom: 1rem;">CyberForge is an orchestration platform designed to provision dynamic cybersecurity challenge environments on-demand.</p>
+        <p style="margin-bottom: 1rem;">Operating primarily via <strong>VirtualBox</strong>, CyberForge provides high-fidelity simulations spanning everything from isolated OWASP Web Vulnerabilities to expansive Active Directory killchains.</p>
+        
+        <h3 class="eyebrow" style="margin-top: 2rem; margin-bottom: 0.5rem;">Architecture</h3>
+        <ul style="padding-left: 1.5rem; margin-bottom: 1rem;">
+          <li><strong>API Runtime:</strong> FastAPI & Python 3.11</li>
+          <li><strong>Database:</strong> SQLAlchemy (PostgreSQL / SQLite)</li>
+          <li><strong>Frontend:</strong> Vanilla JS + High Contrast "Mono" Design System</li>
+          <li><strong>Provisioning:</strong> VBoxManage & CALDERA TTPs</li>
+        </ul>
+        
+        <h3 class="eyebrow" style="margin-top: 2rem; margin-bottom: 0.5rem;">Team Information</h3>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 0.5rem; border: 1px solid var(--line);">
+          <tr style="border-bottom: 1px solid var(--line); background: var(--bg);">
+            <th style="padding: 0.5rem; text-align: left; font-weight: bold; border-right: 1px solid var(--line);">Role</th>
+            <th style="padding: 0.5rem; text-align: left; font-weight: bold;">Details</th>
+          </tr>
+          <tr>
+            <td style="padding: 0.5rem; border-right: 1px solid var(--line);">Project Lead</td>
+            <td style="padding: 0.5rem;">CyberForge Engineering</td>
+          </tr>
+          <tr>
+            <td style="padding: 0.5rem; border-right: 1px solid var(--line);">Repository</td>
+            <td style="padding: 0.5rem;">Internal Deployment</td>
+          </tr>
+          <tr>
+            <td style="padding: 0.5rem; border-right: 1px solid var(--line);">Version</td>
+            <td style="padding: 0.5rem;">1.0.0 (Production)</td>
+          </tr>
+        </table>
+      </div>
     </div>
   </main>
   <script src="/static/app.js" defer></script>

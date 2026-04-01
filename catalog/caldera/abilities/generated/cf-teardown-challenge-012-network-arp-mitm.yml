@@ -1,0 +1,17 @@
+- id: cf-teardown-challenge-012-network-arp-mitm
+  name: '[CF] Teardown: ARP Spoofing MITM'
+  description: Cleanly tear down and remove the hosted environment for challenge-012-network-arp-mitm.
+  tactic: defense-evasion
+  technique:
+    attack_id: T1070
+    name: Indicator Removal
+  platforms:
+    linux:
+      sh:
+        command: "set -e\necho '[CF] Tearing down: challenge-012-network-arp-mitm'\n\
+          WORKDIR=\"/opt/cyberforge/challenge-012-network-arp-mitm\"\nif [ -d \"$WORKDIR/challenges/challenge-012-network-arp-mitm\"\
+          \ ]; then\n  cd \"$WORKDIR/challenges/challenge-012-network-arp-mitm\"\n\
+          \  if [ -f \"teardown.sh\" ]; then\n    chmod +x teardown.sh\n    ./teardown.sh\n\
+          \  else\n    echo '[CF] No teardown script found — stopping any Docker containers\
+          \ if present'\n    docker compose down --remove-orphans 2>/dev/null || true\n\
+          \  fi\nfi\nrm -rf \"$WORKDIR\"\necho '[CF] Teardown complete: challenge-012-network-arp-mitm'"

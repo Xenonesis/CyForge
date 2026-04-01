@@ -1,0 +1,33 @@
+- id: cf-deploy-killchain-005-ics-hybrid-objective-scada01
+  name: '[CF] Deploy machine: scada01 (killchain-005-ics-hybrid-objective)'
+  description: 'Deploy only the scada01 machine role for killchain killchain-005-ics-hybrid-objective.
+
+    Role: SCADA/Modbus simulation server | OS: linux | Stack: scada'
+  tactic: execution
+  technique:
+    attack_id: T1059.004
+    name: Unix Shell
+  platforms:
+    linux:
+      sh:
+        command: "set -e\necho '[CF] CyberForge challenge deploy starting: killchain-005-ics-hybrid-objective-scada01'\n\
+          \n# --- Authenticate to GitLab ---\nGITLAB_TOKEN=\"${GITLAB_TOKEN:-#{gitlab.token}}\"\
+          \nREPO_URL=\"${REPO_URL:-https://gitlab.example.com/cyberforge/cyberforge-content.git}\"\
+          \n\n# Inject token into URL if provided\nif [ -n \"$GITLAB_TOKEN\" ] &&\
+          \ [ \"$GITLAB_TOKEN\" != \"#{gitlab.token}\" ]; then\n  REPO_AUTH_URL=\"\
+          $(echo \"$REPO_URL\" | sed \"s|https://|https://oauth2:${GITLAB_TOKEN}@|\"\
+          )\"\nelse\n  REPO_AUTH_URL=\"$REPO_URL\"\nfi\n\n# --- Sparse-checkout only\
+          \ the challenge directory ---\nWORKDIR=\"/opt/cyberforge/killchain-005-ics-hybrid-objective-scada01\"\
+          \nif [ -d \"$WORKDIR/.git\" ]; then\n  echo '[CF] Updating existing clone...'\n\
+          \  git -C \"$WORKDIR\" pull --ff-only\nelse\n  mkdir -p \"$WORKDIR\"\n \
+          \ git clone --depth 1 --filter=blob:none --sparse \"$REPO_AUTH_URL\" \"\
+          $WORKDIR\"\n  git -C \"$WORKDIR\" sparse-checkout set \"killchains/killchain-005-ics-hybrid-objective/scada01\"\
+          \nfi\n\n# --- Change into challenge directory ---\ncd \"$WORKDIR/killchains/killchain-005-ics-hybrid-objective/scada01\"\
+          \n\n# --- Install dependencies ---\nif ! command -v python3 >/dev/null 2>&1;\
+          \ then\n  apt-get update -q && apt-get install -y python3 python3-pip\n\
+          fi\npip3 install pymodbus 2>/dev/null || true\n\n# --- Run challenge setup\
+          \ ---\nchmod +x scada01_setup.sh\n./scada01_setup.sh\n\necho '[CF] Running\
+          \ health check...'\npython3 -c \"from pymodbus.client import ModbusTcpClient;\
+          \ c=ModbusTcpClient('localhost',port=502); print('Modbus OK' if c.connect()\
+          \ else 'FAIL')\"\necho '[CF] Health check passed.'\n\necho '[CF] Challenge\
+          \ killchain-005-ics-hybrid-objective-scada01 deployed successfully.'"

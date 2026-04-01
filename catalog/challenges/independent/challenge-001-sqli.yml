@@ -4,6 +4,7 @@ description: OWASP Top 10 SQL injection exploitation against a vulnerable query 
 domain: OWASP Top 10 Attacks
 content_type: independent
 difficulty: easy
+stack: docker
 gitlab:
   repo_url: https://gitlab.example.com/cyberforge/cyberforge-content.git
   content_path: challenges/challenge-001-sqli
@@ -14,18 +15,24 @@ technique:
 platforms:
   linux:
     sh:
-      command: 'set -e
-
-        REPO_URL="${REPO_URL:-https://gitlab.example.com/cyberforge/cyberforge-content.git}"
-
-        WORKDIR="/tmp/cyberforge-challenge-001-sqli"
-
-        if [ -d "$WORKDIR" ]; then rm -rf "$WORKDIR"; fi
-
-        git clone --depth 1 "$REPO_URL" "$WORKDIR"
-
-        cd "$WORKDIR/challenges/challenge-001-sqli"
-
-        chmod +x setup.sh
-
-        ./setup.sh'
+      command: "set -e\necho '[CF] CyberForge challenge deploy starting: challenge-001-sqli'\n\
+        \n# --- Authenticate to GitLab ---\nGITLAB_TOKEN=\"${GITLAB_TOKEN:-#{gitlab.token}}\"\
+        \nREPO_URL=\"${REPO_URL:-https://gitlab.example.com/cyberforge/cyberforge-content.git}\"\
+        \n\n# Inject token into URL if provided\nif [ -n \"$GITLAB_TOKEN\" ] && [\
+        \ \"$GITLAB_TOKEN\" != \"#{gitlab.token}\" ]; then\n  REPO_AUTH_URL=\"$(echo\
+        \ \"$REPO_URL\" | sed \"s|https://|https://oauth2:${GITLAB_TOKEN}@|\")\"\n\
+        else\n  REPO_AUTH_URL=\"$REPO_URL\"\nfi\n\n# --- Sparse-checkout only the\
+        \ challenge directory ---\nWORKDIR=\"/opt/cyberforge/challenge-001-sqli\"\n\
+        if [ -d \"$WORKDIR/.git\" ]; then\n  echo '[CF] Updating existing clone...'\n\
+        \  git -C \"$WORKDIR\" pull --ff-only\nelse\n  mkdir -p \"$WORKDIR\"\n  git\
+        \ clone --depth 1 --filter=blob:none --sparse \"$REPO_AUTH_URL\" \"$WORKDIR\"\
+        \n  git -C \"$WORKDIR\" sparse-checkout set \"challenges/challenge-001-sqli\"\
+        \nfi\n\n# --- Change into challenge directory ---\ncd \"$WORKDIR/challenges/challenge-001-sqli\"\
+        \n\n# --- Install dependencies ---\nif ! command -v docker >/dev/null 2>&1;\
+        \ then\n  echo '[CF] Installing Docker...'\n  curl -fsSL https://get.docker.com\
+        \ | sh\n  systemctl enable --now docker\nfi\nif ! command -v docker compose\
+        \ >/dev/null 2>&1; then\n  apt-get install -y docker-compose-plugin 2>/dev/null\
+        \ || true\nfi\n\n# --- Run challenge setup ---\nchmod +x setup.sh\n./setup.sh\n\
+        \necho '[CF] Running health check...'\ncurl -sf http://localhost:8080/health\
+        \ || (echo '[CF] Health check failed' && exit 1)\necho '[CF] Health check\
+        \ passed.'\n\necho '[CF] Challenge challenge-001-sqli deployed successfully.'"

@@ -1,0 +1,17 @@
+- id: cf-teardown-challenge-004-linux-privesc
+  name: '[CF] Teardown: Linux SUID Privilege Escalation'
+  description: Cleanly tear down and remove the hosted environment for challenge-004-linux-privesc.
+  tactic: defense-evasion
+  technique:
+    attack_id: T1070
+    name: Indicator Removal
+  platforms:
+    linux:
+      sh:
+        command: "set -e\necho '[CF] Tearing down: challenge-004-linux-privesc'\n\
+          WORKDIR=\"/opt/cyberforge/challenge-004-linux-privesc\"\nif [ -d \"$WORKDIR/challenges/challenge-004-linux-privesc\"\
+          \ ]; then\n  cd \"$WORKDIR/challenges/challenge-004-linux-privesc\"\n  if\
+          \ [ -f \"teardown.sh\" ]; then\n    chmod +x teardown.sh\n    ./teardown.sh\n\
+          \  else\n    echo '[CF] No teardown script found — stopping any Docker containers\
+          \ if present'\n    docker compose down --remove-orphans 2>/dev/null || true\n\
+          \  fi\nfi\nrm -rf \"$WORKDIR\"\necho '[CF] Teardown complete: challenge-004-linux-privesc'"

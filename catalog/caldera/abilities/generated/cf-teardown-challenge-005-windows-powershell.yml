@@ -1,0 +1,18 @@
+- id: cf-teardown-challenge-005-windows-powershell
+  name: '[CF] Teardown: PowerShell Execution and Defense Evasion'
+  description: Cleanly tear down and remove the hosted environment for challenge-005-windows-powershell.
+  tactic: defense-evasion
+  technique:
+    attack_id: T1070
+    name: Indicator Removal
+  platforms:
+    windows:
+      psh:
+        command: "$ErrorActionPreference = \"SilentlyContinue\"\nWrite-Host \"[CF]\
+          \ Tearing down: challenge-005-windows-powershell\"\n$WorkDir = \"C:\\\\\
+          CyberForge\\\\challenge-005-windows-powershell\"\nif (Test-Path \"$WorkDir\\\
+          \\\" + \"challenges\\\\challenge-005-windows-powershell\") {\n  Set-Location\
+          \ \"$WorkDir\\\\\" + \"challenges\\\\challenge-005-windows-powershell\"\n\
+          \  if (Test-Path \".\\\\\" + \"teardown.ps1\") {\n    powershell -ExecutionPolicy\
+          \ Bypass -File .\\\\teardown.ps1\n  }\n}\nRemove-Item -Recurse -Force $WorkDir\
+          \ -ErrorAction SilentlyContinue\nWrite-Host \"[CF] Teardown complete: challenge-005-windows-powershell\""

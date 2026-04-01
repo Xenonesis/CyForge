@@ -1,0 +1,27 @@
+- id: cf-teardown-killchain-001-web-to-ad
+  name: '[CF] Teardown (fleet): Web Pivot to Domain Compromise'
+  description: Cleanly tear down and remove the hosted environment for killchain-001-web-to-ad.
+  tactic: defense-evasion
+  technique:
+    attack_id: T1070
+    name: Indicator Removal
+  platforms:
+    linux:
+      sh:
+        command: "set -e\necho '[CF] Tearing down: killchain-001-web-to-ad'\nWORKDIR=\"\
+          /opt/cyberforge/killchain-001-web-to-ad\"\nif [ -d \"$WORKDIR/killchains/killchain-001-web-to-ad\"\
+          \ ]; then\n  cd \"$WORKDIR/killchains/killchain-001-web-to-ad\"\n  if [\
+          \ -f \"teardown.sh\" ]; then\n    chmod +x teardown.sh\n    ./teardown.sh\n\
+          \  else\n    echo '[CF] No teardown script found — stopping any Docker containers\
+          \ if present'\n    docker compose down --remove-orphans 2>/dev/null || true\n\
+          \  fi\nfi\nrm -rf \"$WORKDIR\"\necho '[CF] Teardown complete: killchain-001-web-to-ad'"
+    windows:
+      psh:
+        command: "$ErrorActionPreference = \"SilentlyContinue\"\nWrite-Host \"[CF]\
+          \ Tearing down: killchain-001-web-to-ad\"\n$WorkDir = \"C:\\\\CyberForge\\\
+          \\killchain-001-web-to-ad\"\nif (Test-Path \"$WorkDir\\\\\" + \"killchains\\\
+          \\killchain-001-web-to-ad\") {\n  Set-Location \"$WorkDir\\\\\" + \"killchains\\\
+          \\killchain-001-web-to-ad\"\n  if (Test-Path \".\\\\\" + \"teardown.ps1\"\
+          ) {\n    powershell -ExecutionPolicy Bypass -File .\\\\teardown.ps1\n  }\n\
+          }\nRemove-Item -Recurse -Force $WorkDir -ErrorAction SilentlyContinue\n\
+          Write-Host \"[CF] Teardown complete: killchain-001-web-to-ad\""

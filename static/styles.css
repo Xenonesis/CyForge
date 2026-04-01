@@ -140,6 +140,33 @@ body {
   border-color: var(--secondary);
 }
 
+.chip-success {
+  background: var(--success);
+  color: #fff;
+  border-color: var(--success);
+}
+
+.chip-danger {
+  background: var(--danger);
+  color: #fff;
+  border-color: var(--danger);
+}
+
+.chip-warn {
+  background: var(--warning);
+  color: #000;
+  border-color: var(--warning);
+}
+
+.chip-ghost {
+  background: transparent;
+  color: var(--ink-soft);
+  border-color: var(--line);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
 .flash {
   margin: 0;
   color: var(--ink-soft);
@@ -339,16 +366,26 @@ input:focus, select:focus {
   color: var(--ink);
 }
 
+/* State pill — default (idle) */
 .state-pill {
-  display: inline-flex;
-  align-items: center;
+  display: inline-block;
   border-radius: 0;
-  padding: 0.1rem 0.35rem;
-  background: var(--success);
-  color: #fff;
+  padding: 0.1rem 0.4rem;
   font-size: 0.75rem;
+  font-weight: 700;
   text-transform: uppercase;
+  background: var(--line);
+  color: var(--ink);
+  border: 1px solid var(--line);
 }
+
+/* Per-state colour overrides */
+.state-pill.state-active     { background: var(--success);  color: #fff; border-color: var(--success); }
+.state-pill.state-deploying  { background: var(--warning);  color: #000; border-color: var(--warning); }
+.state-pill.state-resetting  { background: var(--secondary); color: #fff; border-color: var(--secondary); }
+.state-pill.state-failed     { background: var(--danger);   color: #fff; border-color: var(--danger); }
+.state-pill.state-terminated { background: var(--ink-soft); color: var(--bg); border-color: var(--ink-soft); }
+.state-pill.state-idle       { background: transparent;     color: var(--ink-soft); border-color: var(--line); }
 
 /* Payloads */
 .payload {
@@ -444,6 +481,36 @@ input:focus, select:focus {
   font-size: 0.75rem;
 }
 
+.audit-meta strong {
+  color: var(--ink);
+}
+
+.audit-error {
+  color: var(--danger);
+  font-style: italic;
+}
+
+/* Loading state via aria-busy */
+.btn[aria-busy="true"] {
+  opacity: 0.65;
+  cursor: wait;
+  position: relative;
+}
+.btn[aria-busy="true"]::after {
+  content: " ▌";
+  animation: blink-cursor 0.8s step-end infinite;
+}
+
+@keyframes blink-cursor {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* Operator-ID validation highlight */
+input:invalid {
+  border-color: var(--danger);
+}
+
 /* Scrollbar tweaks for hacker aesthetic */
 ::-webkit-scrollbar {
   width: 8px;
@@ -468,3 +535,45 @@ input:focus, select:focus {
     grid-template-columns: 1fr;
   }
 }
+
+/* Base ghost button, no border until hover */
+.btn-ghost {
+  border-color: transparent;
+  box-shadow: none;
+}
+[data-theme="dark"] .btn-ghost {
+  border-color: transparent;
+  box-shadow: none;
+}
+
+/* Navigation tabs */
+.nav-tabs {
+  display: flex;
+  gap: 1rem;
+  border-bottom: 2px solid var(--line);
+  margin-top: 1rem;
+}
+
+.nav-tabs .btn-ghost {
+  border: 1px solid transparent;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px; /* Pull down over the border */
+  color: var(--ink-soft);
+  padding: 0.5rem 1rem;
+  box-shadow: none;
+}
+
+.nav-tabs .btn-ghost:hover {
+  transform: none;
+  box-shadow: none;
+  color: var(--ink);
+  background: transparent;
+  border-bottom: 2px solid var(--ink);
+}
+
+.nav-tabs .btn-ghost.active {
+  color: var(--primary);
+  border-bottom: 2px solid var(--primary);
+  background: transparent;
+}
+

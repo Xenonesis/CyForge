@@ -4,6 +4,7 @@ description: PowerShell execution workflow and script-based payload staging lab.
 domain: Python and Powershell for attack
 content_type: independent
 difficulty: medium
+stack: none
 gitlab:
   repo_url: https://gitlab.example.com/cyberforge/cyberforge-content.git
   content_path: challenges/challenge-005-windows-powershell
@@ -14,15 +15,23 @@ technique:
 platforms:
   windows:
     psh:
-      command: '$RepoUrl = if ($env:REPO_URL) { $env:REPO_URL } else { "https://gitlab.example.com/cyberforge/cyberforge-content.git"
-        }
-
-        $WorkDir = "C:\\Temp\\cyberforge-challenge-005-windows-powershell"
-
-        if (Test-Path $WorkDir) { Remove-Item -Recurse -Force $WorkDir }
-
-        git clone --depth 1 $RepoUrl $WorkDir
-
-        Set-Location "$WorkDir\\challenges\\challenge-005-windows-powershell"
-
-        powershell -ExecutionPolicy Bypass -File .\\setup.ps1'
+      command: "$ErrorActionPreference = \"Stop\"\nWrite-Host \"[CF] CyberForge challenge\
+        \ deploy starting: challenge-005-windows-powershell\"\n\n# --- Authenticate\
+        \ to GitLab ---\n$GitlabToken = if ($env:GITLAB_TOKEN) { $env:GITLAB_TOKEN\
+        \ } elseif (\"#{gitlab.token}\" -ne \"#{gitlab.token}\") { \"#{gitlab.token}\"\
+        \ } else { \"\" }\n$RepoUrl = if ($env:REPO_URL) { $env:REPO_URL } else {\
+        \ \"https://gitlab.example.com/cyberforge/cyberforge-content.git\" }\n\nif\
+        \ ($GitlabToken) {\n  $RepoAuthUrl = $RepoUrl -replace \"https://\", \"https://oauth2:$($GitlabToken)@\"\
+        \n} else {\n  $RepoAuthUrl = $RepoUrl\n}\n\n# --- Sparse-checkout only the\
+        \ challenge directory ---\n$WorkDir = \"C:\\\\CyberForge\\\\challenge-005-windows-powershell\"\
+        \nif (Test-Path \"$WorkDir\\.git\") {\n  Write-Host '[CF] Updating existing\
+        \ clone...'\n  git -C $WorkDir pull --ff-only\n} else {\n  New-Item -ItemType\
+        \ Directory -Force -Path $WorkDir | Out-Null\n  git clone --depth 1 --filter=blob:none\
+        \ --sparse $RepoAuthUrl $WorkDir\n  git -C $WorkDir sparse-checkout set \"\
+        challenges/challenge-005-windows-powershell\"\n}\n\n# --- Change into challenge\
+        \ directory ---\nSet-Location \"$WorkDir\\\\challenges\\\\challenge-005-windows-powershell\"\
+        \n\n# --- Run challenge setup ---\npowershell -ExecutionPolicy Bypass -File\
+        \ .\\\\setup.ps1\n\nWrite-Host '[CF] Running health check...'\nif (-not (Test-Path\
+        \ C:\\CyberForge\\challenge-005-windows-powershell\\README.txt)) { Write-Error\
+        \ '[CF] Setup incomplete' }\nWrite-Host '[CF] Health check passed.'\n\nWrite-Host\
+        \ \"[CF] Challenge challenge-005-windows-powershell deployed successfully.\""

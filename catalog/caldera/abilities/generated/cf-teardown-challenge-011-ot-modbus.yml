@@ -1,0 +1,17 @@
+- id: cf-teardown-challenge-011-ot-modbus
+  name: '[CF] Teardown: ICS Modbus Unauthorized Write'
+  description: Cleanly tear down and remove the hosted environment for challenge-011-ot-modbus.
+  tactic: defense-evasion
+  technique:
+    attack_id: T1070
+    name: Indicator Removal
+  platforms:
+    linux:
+      sh:
+        command: "set -e\necho '[CF] Tearing down: challenge-011-ot-modbus'\nWORKDIR=\"\
+          /opt/cyberforge/challenge-011-ot-modbus\"\nif [ -d \"$WORKDIR/challenges/challenge-011-ot-modbus\"\
+          \ ]; then\n  cd \"$WORKDIR/challenges/challenge-011-ot-modbus\"\n  if [\
+          \ -f \"teardown.sh\" ]; then\n    chmod +x teardown.sh\n    ./teardown.sh\n\
+          \  else\n    echo '[CF] No teardown script found — stopping any Docker containers\
+          \ if present'\n    docker compose down --remove-orphans 2>/dev/null || true\n\
+          \  fi\nfi\nrm -rf \"$WORKDIR\"\necho '[CF] Teardown complete: challenge-011-ot-modbus'"

@@ -1,0 +1,36 @@
+- id: cf-deploy-killchain-002-phishing-to-adcs-dc02
+  name: '[CF] Deploy machine: dc02 (killchain-002-phishing-to-adcs)'
+  description: 'Deploy only the dc02 machine role for killchain killchain-002-phishing-to-adcs.
+
+    Role: DC with ADCS template misconfiguration | OS: windows | Stack: ad'
+  tactic: execution
+  technique:
+    attack_id: T1059.001
+    name: PowerShell
+  platforms:
+    windows:
+      psh:
+        command: "$ErrorActionPreference = \"Stop\"\nWrite-Host \"[CF] CyberForge\
+          \ challenge deploy starting: killchain-002-phishing-to-adcs-dc02\"\n\n#\
+          \ --- Authenticate to GitLab ---\n$GitlabToken = if ($env:GITLAB_TOKEN)\
+          \ { $env:GITLAB_TOKEN } elseif (\"#{gitlab.token}\" -ne \"#{gitlab.token}\"\
+          ) { \"#{gitlab.token}\" } else { \"\" }\n$RepoUrl = if ($env:REPO_URL) {\
+          \ $env:REPO_URL } else { \"https://gitlab.example.com/cyberforge/cyberforge-content.git\"\
+          \ }\n\nif ($GitlabToken) {\n  $RepoAuthUrl = $RepoUrl -replace \"https://\"\
+          , \"https://oauth2:$($GitlabToken)@\"\n} else {\n  $RepoAuthUrl = $RepoUrl\n\
+          }\n\n# --- Sparse-checkout only the challenge directory ---\n$WorkDir =\
+          \ \"C:\\\\CyberForge\\\\killchain-002-phishing-to-adcs-dc02\"\nif (Test-Path\
+          \ \"$WorkDir\\.git\") {\n  Write-Host '[CF] Updating existing clone...'\n\
+          \  git -C $WorkDir pull --ff-only\n} else {\n  New-Item -ItemType Directory\
+          \ -Force -Path $WorkDir | Out-Null\n  git clone --depth 1 --filter=blob:none\
+          \ --sparse $RepoAuthUrl $WorkDir\n  git -C $WorkDir sparse-checkout set\
+          \ \"killchains/killchain-002-phishing-to-adcs/dc02\"\n}\n\n# --- Change\
+          \ into challenge directory ---\nSet-Location \"$WorkDir\\\\killchains\\\\\
+          killchain-002-phishing-to-adcs\\\\dc02\"\n\n# --- Install dependencies ---\n\
+          if (-not (Get-Module -ListAvailable -Name ActiveDirectory)) {\n  Add-WindowsFeature\
+          \ -Name RSAT-AD-PowerShell -IncludeAllSubFeature 2>$null\n}\n\n# --- Run\
+          \ challenge setup ---\npowershell -ExecutionPolicy Bypass -File .\\\\dc02_setup.ps1\n\
+          \nWrite-Host '[CF] Running health check...'\nGet-CATemplate | Measure-Object\
+          \ | Select-Object -ExpandProperty Count\nWrite-Host '[CF] Health check passed.'\n\
+          \nWrite-Host \"[CF] Challenge killchain-002-phishing-to-adcs-dc02 deployed\
+          \ successfully.\""

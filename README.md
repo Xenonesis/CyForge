@@ -1,5 +1,7 @@
 # CyberForge
 
+<img align="right" src="static/cobra_favicon.png" width="120" height="120" alt="CyberForge Logo">
+
 CyberForge is an automated cyber range orchestration platform. This repository contains the first MVP implementation slice:
 
 - Challenge catalog loading and schema validation
@@ -169,6 +171,10 @@ uvicorn cyberforge.main:app --reload
 ```powershell
 pytest
 ```
+
+## Production Deployment
+
+If you are looking to run this in a production environment (with PostgreSQL, Nginx, Systemd, and real VirtualBox environments), please consult the detailed [Deployment Guide](DEPLOYMENT.md).
 
 ## Folder Layout
 

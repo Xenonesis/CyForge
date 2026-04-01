@@ -1,0 +1,57 @@
+- id: cf-deploy-challenge-015-python-powershell
+  name: '[CF] Deploy: Python and PowerShell Multi-Stage'
+  description: 'Pull challenge-015-python-powershell from GitLab and host it on the
+    target machine.
+
+    Domain: Python and Powershell for attack | Difficulty: hard | Stack: python'
+  tactic: execution
+  technique:
+    attack_id: T1059
+    name: Command and Scripting Interpreter
+  platforms:
+    linux:
+      sh:
+        command: "set -e\necho '[CF] CyberForge challenge deploy starting: challenge-015-python-powershell'\n\
+          \n# --- Authenticate to GitLab ---\nGITLAB_TOKEN=\"${GITLAB_TOKEN:-#{gitlab.token}}\"\
+          \nREPO_URL=\"${REPO_URL:-https://gitlab.example.com/cyberforge/cyberforge-content.git}\"\
+          \n\n# Inject token into URL if provided\nif [ -n \"$GITLAB_TOKEN\" ] &&\
+          \ [ \"$GITLAB_TOKEN\" != \"#{gitlab.token}\" ]; then\n  REPO_AUTH_URL=\"\
+          $(echo \"$REPO_URL\" | sed \"s|https://|https://oauth2:${GITLAB_TOKEN}@|\"\
+          )\"\nelse\n  REPO_AUTH_URL=\"$REPO_URL\"\nfi\n\n# --- Sparse-checkout only\
+          \ the challenge directory ---\nWORKDIR=\"/opt/cyberforge/challenge-015-python-powershell\"\
+          \nif [ -d \"$WORKDIR/.git\" ]; then\n  echo '[CF] Updating existing clone...'\n\
+          \  git -C \"$WORKDIR\" pull --ff-only\nelse\n  mkdir -p \"$WORKDIR\"\n \
+          \ git clone --depth 1 --filter=blob:none --sparse \"$REPO_AUTH_URL\" \"\
+          $WORKDIR\"\n  git -C \"$WORKDIR\" sparse-checkout set \"challenges/challenge-015-python-powershell\"\
+          \nfi\n\n# --- Change into challenge directory ---\ncd \"$WORKDIR/challenges/challenge-015-python-powershell\"\
+          \n\n# --- Install dependencies ---\nif ! command -v python3 >/dev/null 2>&1;\
+          \ then\n  apt-get update -q && apt-get install -y python3 python3-pip python3-venv\n\
+          fi\n\n# --- Run challenge setup ---\nchmod +x setup.sh\n./setup.sh\n\necho\
+          \ '[CF] Running health check...'\npython3 --version && echo '[CF] Python\
+          \ runtime OK'\necho '[CF] Health check passed.'\n\necho '[CF] Challenge\
+          \ challenge-015-python-powershell deployed successfully.'"
+    windows:
+      psh:
+        command: "$ErrorActionPreference = \"Stop\"\nWrite-Host \"[CF] CyberForge\
+          \ challenge deploy starting: challenge-015-python-powershell\"\n\n# ---\
+          \ Authenticate to GitLab ---\n$GitlabToken = if ($env:GITLAB_TOKEN) { $env:GITLAB_TOKEN\
+          \ } elseif (\"#{gitlab.token}\" -ne \"#{gitlab.token}\") { \"#{gitlab.token}\"\
+          \ } else { \"\" }\n$RepoUrl = if ($env:REPO_URL) { $env:REPO_URL } else\
+          \ { \"https://gitlab.example.com/cyberforge/cyberforge-content.git\" }\n\
+          \nif ($GitlabToken) {\n  $RepoAuthUrl = $RepoUrl -replace \"https://\",\
+          \ \"https://oauth2:$($GitlabToken)@\"\n} else {\n  $RepoAuthUrl = $RepoUrl\n\
+          }\n\n# --- Sparse-checkout only the challenge directory ---\n$WorkDir =\
+          \ \"C:\\\\CyberForge\\\\challenge-015-python-powershell\"\nif (Test-Path\
+          \ \"$WorkDir\\.git\") {\n  Write-Host '[CF] Updating existing clone...'\n\
+          \  git -C $WorkDir pull --ff-only\n} else {\n  New-Item -ItemType Directory\
+          \ -Force -Path $WorkDir | Out-Null\n  git clone --depth 1 --filter=blob:none\
+          \ --sparse $RepoAuthUrl $WorkDir\n  git -C $WorkDir sparse-checkout set\
+          \ \"challenges/challenge-015-python-powershell\"\n}\n\n# --- Change into\
+          \ challenge directory ---\nSet-Location \"$WorkDir\\\\challenges\\\\challenge-015-python-powershell\"\
+          \n\n# --- Install dependencies ---\nif (-not (Get-Command python -ErrorAction\
+          \ SilentlyContinue)) {\n  winget install -e --id Python.Python.3 --silent\
+          \ --accept-source-agreements 2>$null\n}\n\n# --- Run challenge setup ---\n\
+          powershell -ExecutionPolicy Bypass -File .\\\\setup.ps1\n\nWrite-Host '[CF]\
+          \ Running health check...'\npython --version; Write-Host '[CF] Python runtime\
+          \ OK'\nWrite-Host '[CF] Health check passed.'\n\nWrite-Host \"[CF] Challenge\
+          \ challenge-015-python-powershell deployed successfully.\""

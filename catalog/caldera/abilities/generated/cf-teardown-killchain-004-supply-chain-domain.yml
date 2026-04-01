@@ -1,0 +1,28 @@
+- id: cf-teardown-killchain-004-supply-chain-domain
+  name: '[CF] Teardown (fleet): Supply Chain Compromise to Domain Control'
+  description: Cleanly tear down and remove the hosted environment for killchain-004-supply-chain-domain.
+  tactic: defense-evasion
+  technique:
+    attack_id: T1070
+    name: Indicator Removal
+  platforms:
+    linux:
+      sh:
+        command: "set -e\necho '[CF] Tearing down: killchain-004-supply-chain-domain'\n\
+          WORKDIR=\"/opt/cyberforge/killchain-004-supply-chain-domain\"\nif [ -d \"\
+          $WORKDIR/killchains/killchain-004-supply-chain-domain\" ]; then\n  cd \"\
+          $WORKDIR/killchains/killchain-004-supply-chain-domain\"\n  if [ -f \"teardown.sh\"\
+          \ ]; then\n    chmod +x teardown.sh\n    ./teardown.sh\n  else\n    echo\
+          \ '[CF] No teardown script found — stopping any Docker containers if present'\n\
+          \    docker compose down --remove-orphans 2>/dev/null || true\n  fi\nfi\n\
+          rm -rf \"$WORKDIR\"\necho '[CF] Teardown complete: killchain-004-supply-chain-domain'"
+    windows:
+      psh:
+        command: "$ErrorActionPreference = \"SilentlyContinue\"\nWrite-Host \"[CF]\
+          \ Tearing down: killchain-004-supply-chain-domain\"\n$WorkDir = \"C:\\\\\
+          CyberForge\\\\killchain-004-supply-chain-domain\"\nif (Test-Path \"$WorkDir\\\
+          \\\" + \"killchains\\\\killchain-004-supply-chain-domain\") {\n  Set-Location\
+          \ \"$WorkDir\\\\\" + \"killchains\\\\killchain-004-supply-chain-domain\"\
+          \n  if (Test-Path \".\\\\\" + \"teardown.ps1\") {\n    powershell -ExecutionPolicy\
+          \ Bypass -File .\\\\teardown.ps1\n  }\n}\nRemove-Item -Recurse -Force $WorkDir\
+          \ -ErrorAction SilentlyContinue\nWrite-Host \"[CF] Teardown complete: killchain-004-supply-chain-domain\""

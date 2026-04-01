@@ -1,0 +1,37 @@
+- id: cf-deploy-challenge-008-ad-kerberoast
+  name: '[CF] Deploy: Active Directory Kerberoasting'
+  description: 'Pull challenge-008-ad-kerberoast from GitLab and host it on the target
+    machine.
+
+    Domain: AD Attacks | Difficulty: hard | Stack: ad'
+  tactic: credential-access
+  technique:
+    attack_id: T1558.003
+    name: Kerberoasting
+  platforms:
+    windows:
+      psh:
+        command: "$ErrorActionPreference = \"Stop\"\nWrite-Host \"[CF] CyberForge\
+          \ challenge deploy starting: challenge-008-ad-kerberoast\"\n\n# --- Authenticate\
+          \ to GitLab ---\n$GitlabToken = if ($env:GITLAB_TOKEN) { $env:GITLAB_TOKEN\
+          \ } elseif (\"#{gitlab.token}\" -ne \"#{gitlab.token}\") { \"#{gitlab.token}\"\
+          \ } else { \"\" }\n$RepoUrl = if ($env:REPO_URL) { $env:REPO_URL } else\
+          \ { \"https://gitlab.example.com/cyberforge/cyberforge-content.git\" }\n\
+          \nif ($GitlabToken) {\n  $RepoAuthUrl = $RepoUrl -replace \"https://\",\
+          \ \"https://oauth2:$($GitlabToken)@\"\n} else {\n  $RepoAuthUrl = $RepoUrl\n\
+          }\n\n# --- Sparse-checkout only the challenge directory ---\n$WorkDir =\
+          \ \"C:\\\\CyberForge\\\\challenge-008-ad-kerberoast\"\nif (Test-Path \"\
+          $WorkDir\\.git\") {\n  Write-Host '[CF] Updating existing clone...'\n  git\
+          \ -C $WorkDir pull --ff-only\n} else {\n  New-Item -ItemType Directory -Force\
+          \ -Path $WorkDir | Out-Null\n  git clone --depth 1 --filter=blob:none --sparse\
+          \ $RepoAuthUrl $WorkDir\n  git -C $WorkDir sparse-checkout set \"challenges/challenge-008-ad-kerberoast\"\
+          \n}\n\n# --- Change into challenge directory ---\nSet-Location \"$WorkDir\\\
+          \\challenges\\\\challenge-008-ad-kerberoast\"\n\n# --- Install dependencies\
+          \ ---\nif (-not (Get-Module -ListAvailable -Name ActiveDirectory)) {\n \
+          \ Add-WindowsFeature -Name RSAT-AD-PowerShell -IncludeAllSubFeature 2>$null\n\
+          }\n\n# --- Run challenge setup ---\npowershell -ExecutionPolicy Bypass -File\
+          \ .\\\\setup.ps1\n\nWrite-Host '[CF] Running health check...'\nGet-ADUser\
+          \ -Filter * -Properties ServicePrincipalName | Where-Object { $_.ServicePrincipalName\
+          \ } | Measure-Object | Select-Object -ExpandProperty Count\nWrite-Host '[CF]\
+          \ Health check passed.'\n\nWrite-Host \"[CF] Challenge challenge-008-ad-kerberoast\
+          \ deployed successfully.\""

@@ -1,0 +1,36 @@
+- id: cf-deploy-challenge-009-ad-adcs-esc1
+  name: '[CF] Deploy: Active Directory ADCS ESC1'
+  description: 'Pull challenge-009-ad-adcs-esc1 from GitLab and host it on the target
+    machine.
+
+    Domain: AD Attacks | Difficulty: hard | Stack: ad'
+  tactic: privilege-escalation
+  technique:
+    attack_id: T1649
+    name: Steal or Forge Authentication Certificates
+  platforms:
+    windows:
+      psh:
+        command: "$ErrorActionPreference = \"Stop\"\nWrite-Host \"[CF] CyberForge\
+          \ challenge deploy starting: challenge-009-ad-adcs-esc1\"\n\n# --- Authenticate\
+          \ to GitLab ---\n$GitlabToken = if ($env:GITLAB_TOKEN) { $env:GITLAB_TOKEN\
+          \ } elseif (\"#{gitlab.token}\" -ne \"#{gitlab.token}\") { \"#{gitlab.token}\"\
+          \ } else { \"\" }\n$RepoUrl = if ($env:REPO_URL) { $env:REPO_URL } else\
+          \ { \"https://gitlab.example.com/cyberforge/cyberforge-content.git\" }\n\
+          \nif ($GitlabToken) {\n  $RepoAuthUrl = $RepoUrl -replace \"https://\",\
+          \ \"https://oauth2:$($GitlabToken)@\"\n} else {\n  $RepoAuthUrl = $RepoUrl\n\
+          }\n\n# --- Sparse-checkout only the challenge directory ---\n$WorkDir =\
+          \ \"C:\\\\CyberForge\\\\challenge-009-ad-adcs-esc1\"\nif (Test-Path \"$WorkDir\\\
+          .git\") {\n  Write-Host '[CF] Updating existing clone...'\n  git -C $WorkDir\
+          \ pull --ff-only\n} else {\n  New-Item -ItemType Directory -Force -Path\
+          \ $WorkDir | Out-Null\n  git clone --depth 1 --filter=blob:none --sparse\
+          \ $RepoAuthUrl $WorkDir\n  git -C $WorkDir sparse-checkout set \"challenges/challenge-009-ad-adcs-esc1\"\
+          \n}\n\n# --- Change into challenge directory ---\nSet-Location \"$WorkDir\\\
+          \\challenges\\\\challenge-009-ad-adcs-esc1\"\n\n# --- Install dependencies\
+          \ ---\nif (-not (Get-Module -ListAvailable -Name ActiveDirectory)) {\n \
+          \ Add-WindowsFeature -Name RSAT-AD-PowerShell -IncludeAllSubFeature 2>$null\n\
+          }\n\n# --- Run challenge setup ---\npowershell -ExecutionPolicy Bypass -File\
+          \ .\\\\setup.ps1\n\nWrite-Host '[CF] Running health check...'\nGet-CATemplate\
+          \ | Measure-Object | Select-Object -ExpandProperty Count\nWrite-Host '[CF]\
+          \ Health check passed.'\n\nWrite-Host \"[CF] Challenge challenge-009-ad-adcs-esc1\
+          \ deployed successfully.\""

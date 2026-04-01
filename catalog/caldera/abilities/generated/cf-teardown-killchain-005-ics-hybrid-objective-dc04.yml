@@ -1,0 +1,19 @@
+- id: cf-teardown-killchain-005-ics-hybrid-objective-dc04
+  name: '[CF] Teardown machine: dc04 (killchain-005-ics-hybrid-objective)'
+  description: Cleanly tear down and remove the hosted environment for killchain-005-ics-hybrid-objective-dc04.
+  tactic: defense-evasion
+  technique:
+    attack_id: T1070
+    name: Indicator Removal
+  platforms:
+    windows:
+      psh:
+        command: "$ErrorActionPreference = \"SilentlyContinue\"\nWrite-Host \"[CF]\
+          \ Tearing down: killchain-005-ics-hybrid-objective-dc04\"\n$WorkDir = \"\
+          C:\\\\CyberForge\\\\killchain-005-ics-hybrid-objective-dc04\"\nif (Test-Path\
+          \ \"$WorkDir\\\\\" + \"killchains\\\\killchain-005-ics-hybrid-objective\\\
+          \\dc04\") {\n  Set-Location \"$WorkDir\\\\\" + \"killchains\\\\killchain-005-ics-hybrid-objective\\\
+          \\dc04\"\n  if (Test-Path \".\\\\\" + \"teardown.ps1\") {\n    powershell\
+          \ -ExecutionPolicy Bypass -File .\\\\teardown.ps1\n  }\n}\nRemove-Item -Recurse\
+          \ -Force $WorkDir -ErrorAction SilentlyContinue\nWrite-Host \"[CF] Teardown\
+          \ complete: killchain-005-ics-hybrid-objective-dc04\""

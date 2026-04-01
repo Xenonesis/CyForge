@@ -1,0 +1,53 @@
+- id: cf-deploy-killchain-005-ics-hybrid-objective
+  name: '[CF] Deploy (fleet): Hybrid IT/OT Intrusion to Objective'
+  description: 'Deploy all machines for killchain killchain-005-ics-hybrid-objective.
+
+    Run this ability once per machine in the operation — CALDERA will send it to every
+    agent.
+
+    Vulnerabilities: Public-facing service exploitation, Credential abuse on jump
+    host, Pivot into OT segment, AD trust abuse for persistence, Action on objective
+    in ICS simulation'
+  tactic: impact
+  technique:
+    attack_id: T0831
+    name: Manipulation of Control
+  platforms:
+    linux:
+      sh:
+        command: "set -e\necho '[CF] CyberForge challenge deploy starting: killchain-005-ics-hybrid-objective'\n\
+          \n# --- Authenticate to GitLab ---\nGITLAB_TOKEN=\"${GITLAB_TOKEN:-#{gitlab.token}}\"\
+          \nREPO_URL=\"${REPO_URL:-https://gitlab.example.com/cyberforge/cyberforge-content.git}\"\
+          \n\n# Inject token into URL if provided\nif [ -n \"$GITLAB_TOKEN\" ] &&\
+          \ [ \"$GITLAB_TOKEN\" != \"#{gitlab.token}\" ]; then\n  REPO_AUTH_URL=\"\
+          $(echo \"$REPO_URL\" | sed \"s|https://|https://oauth2:${GITLAB_TOKEN}@|\"\
+          )\"\nelse\n  REPO_AUTH_URL=\"$REPO_URL\"\nfi\n\n# --- Sparse-checkout only\
+          \ the challenge directory ---\nWORKDIR=\"/opt/cyberforge/killchain-005-ics-hybrid-objective\"\
+          \nif [ -d \"$WORKDIR/.git\" ]; then\n  echo '[CF] Updating existing clone...'\n\
+          \  git -C \"$WORKDIR\" pull --ff-only\nelse\n  mkdir -p \"$WORKDIR\"\n \
+          \ git clone --depth 1 --filter=blob:none --sparse \"$REPO_AUTH_URL\" \"\
+          $WORKDIR\"\n  git -C \"$WORKDIR\" sparse-checkout set \"killchains/killchain-005-ics-hybrid-objective\"\
+          \nfi\n\n# --- Change into challenge directory ---\ncd \"$WORKDIR/killchains/killchain-005-ics-hybrid-objective\"\
+          \n\n# --- Run challenge setup ---\nchmod +x setup.sh\n./setup.sh\n\necho\
+          \ '[CF] Challenge killchain-005-ics-hybrid-objective deployed successfully.'"
+    windows:
+      psh:
+        command: "$ErrorActionPreference = \"Stop\"\nWrite-Host \"[CF] CyberForge\
+          \ challenge deploy starting: killchain-005-ics-hybrid-objective\"\n\n# ---\
+          \ Authenticate to GitLab ---\n$GitlabToken = if ($env:GITLAB_TOKEN) { $env:GITLAB_TOKEN\
+          \ } elseif (\"#{gitlab.token}\" -ne \"#{gitlab.token}\") { \"#{gitlab.token}\"\
+          \ } else { \"\" }\n$RepoUrl = if ($env:REPO_URL) { $env:REPO_URL } else\
+          \ { \"https://gitlab.example.com/cyberforge/cyberforge-content.git\" }\n\
+          \nif ($GitlabToken) {\n  $RepoAuthUrl = $RepoUrl -replace \"https://\",\
+          \ \"https://oauth2:$($GitlabToken)@\"\n} else {\n  $RepoAuthUrl = $RepoUrl\n\
+          }\n\n# --- Sparse-checkout only the challenge directory ---\n$WorkDir =\
+          \ \"C:\\\\CyberForge\\\\killchain-005-ics-hybrid-objective\"\nif (Test-Path\
+          \ \"$WorkDir\\.git\") {\n  Write-Host '[CF] Updating existing clone...'\n\
+          \  git -C $WorkDir pull --ff-only\n} else {\n  New-Item -ItemType Directory\
+          \ -Force -Path $WorkDir | Out-Null\n  git clone --depth 1 --filter=blob:none\
+          \ --sparse $RepoAuthUrl $WorkDir\n  git -C $WorkDir sparse-checkout set\
+          \ \"killchains/killchain-005-ics-hybrid-objective\"\n}\n\n# --- Change into\
+          \ challenge directory ---\nSet-Location \"$WorkDir\\\\killchains\\\\killchain-005-ics-hybrid-objective\"\
+          \n\n# --- Run challenge setup ---\npowershell -ExecutionPolicy Bypass -File\
+          \ .\\\\setup.ps1\n\nWrite-Host \"[CF] Challenge killchain-005-ics-hybrid-objective\
+          \ deployed successfully.\""

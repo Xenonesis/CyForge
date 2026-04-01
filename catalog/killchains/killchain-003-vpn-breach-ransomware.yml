@@ -8,57 +8,75 @@ tactic: impact
 technique:
   attack_id: T1486
   name: Data Encrypted for Impact
-platforms:
-  linux:
-    sh:
-      command: 'set -e
-
-        REPO_URL="${REPO_URL:-https://gitlab.example.com/cyberforge/cyberforge-content.git}"
-
-        WORKDIR="/tmp/cyberforge-killchain-003-vpn-breach-ransomware"
-
-        if [ -d "$WORKDIR" ]; then rm -rf "$WORKDIR"; fi
-
-        git clone --depth 1 "$REPO_URL" "$WORKDIR"
-
-        cd "$WORKDIR/killchains/killchain-003-vpn-breach-ransomware"
-
-        chmod +x setup.sh
-
-        ./setup.sh'
-  windows:
-    psh:
-      command: '$RepoUrl = if ($env:REPO_URL) { $env:REPO_URL } else { "https://gitlab.example.com/cyberforge/cyberforge-content.git"
-        }
-
-        $WorkDir = "C:\\Temp\\cyberforge-killchain-003-vpn-breach-ransomware"
-
-        if (Test-Path $WorkDir) { Remove-Item -Recurse -Force $WorkDir }
-
-        git clone --depth 1 $RepoUrl $WorkDir
-
-        Set-Location "$WorkDir\\killchains\\killchain-003-vpn-breach-ransomware"
-
-        powershell -ExecutionPolicy Bypass -File .\\setup.ps1'
-machines:
-- machine_id: vpn01
-  os: linux
-  setup_script: vpn01_setup.sh
-- machine_id: ws03
-  os: windows
-  setup_script: ws03_setup.ps1
-- machine_id: files01
-  os: windows
-  setup_script: files01_setup.ps1
-- machine_id: ops01
-  os: linux
-  setup_script: ops01_setup.sh
+gitlab:
+  repo_url: https://gitlab.example.com/cyberforge/cyberforge-content.git
+  content_path: killchains/killchain-003-vpn-breach-ransomware
 vulnerabilities:
 - VPN brute-force and credential stuffing
 - Persistence via scheduled task
 - Privilege escalation on file server
 - Lateral movement using pass-the-hash
 - Ransomware-style impact simulation
-gitlab:
-  repo_url: https://gitlab.example.com/cyberforge/cyberforge-content.git
-  content_path: killchains/killchain-003-vpn-breach-ransomware
+machines:
+- machine_id: vpn01
+  os: linux
+  setup_script: vpn01_setup.sh
+  stack: docker
+  role: VPN gateway with brute-force surface
+  health_check: ss -tlnp | grep 1194 || echo 'VPN port may differ'
+- machine_id: ws03
+  os: windows
+  setup_script: ws03_setup.ps1
+  stack: none
+  role: Windows workstation for lateral movement
+  health_check: ''
+- machine_id: files01
+  os: windows
+  setup_script: files01_setup.ps1
+  stack: none
+  role: File server — ransomware target
+  health_check: Test-Path C:\shares\cf_target
+- machine_id: ops01
+  os: linux
+  setup_script: ops01_setup.sh
+  stack: none
+  role: Linux ops server for pass-the-hash pivot
+  health_check: ''
+platforms:
+  linux:
+    sh:
+      command: "set -e\necho '[CF] CyberForge challenge deploy starting: killchain-003-vpn-breach-ransomware'\n\
+        \n# --- Authenticate to GitLab ---\nGITLAB_TOKEN=\"${GITLAB_TOKEN:-#{gitlab.token}}\"\
+        \nREPO_URL=\"${REPO_URL:-https://gitlab.example.com/cyberforge/cyberforge-content.git}\"\
+        \n\n# Inject token into URL if provided\nif [ -n \"$GITLAB_TOKEN\" ] && [\
+        \ \"$GITLAB_TOKEN\" != \"#{gitlab.token}\" ]; then\n  REPO_AUTH_URL=\"$(echo\
+        \ \"$REPO_URL\" | sed \"s|https://|https://oauth2:${GITLAB_TOKEN}@|\")\"\n\
+        else\n  REPO_AUTH_URL=\"$REPO_URL\"\nfi\n\n# --- Sparse-checkout only the\
+        \ challenge directory ---\nWORKDIR=\"/opt/cyberforge/killchain-003-vpn-breach-ransomware\"\
+        \nif [ -d \"$WORKDIR/.git\" ]; then\n  echo '[CF] Updating existing clone...'\n\
+        \  git -C \"$WORKDIR\" pull --ff-only\nelse\n  mkdir -p \"$WORKDIR\"\n  git\
+        \ clone --depth 1 --filter=blob:none --sparse \"$REPO_AUTH_URL\" \"$WORKDIR\"\
+        \n  git -C \"$WORKDIR\" sparse-checkout set \"killchains/killchain-003-vpn-breach-ransomware\"\
+        \nfi\n\n# --- Change into challenge directory ---\ncd \"$WORKDIR/killchains/killchain-003-vpn-breach-ransomware\"\
+        \n\n# --- Run challenge setup ---\nchmod +x setup.sh\n./setup.sh\n\necho '[CF]\
+        \ Challenge killchain-003-vpn-breach-ransomware deployed successfully.'"
+  windows:
+    psh:
+      command: "$ErrorActionPreference = \"Stop\"\nWrite-Host \"[CF] CyberForge challenge\
+        \ deploy starting: killchain-003-vpn-breach-ransomware\"\n\n# --- Authenticate\
+        \ to GitLab ---\n$GitlabToken = if ($env:GITLAB_TOKEN) { $env:GITLAB_TOKEN\
+        \ } elseif (\"#{gitlab.token}\" -ne \"#{gitlab.token}\") { \"#{gitlab.token}\"\
+        \ } else { \"\" }\n$RepoUrl = if ($env:REPO_URL) { $env:REPO_URL } else {\
+        \ \"https://gitlab.example.com/cyberforge/cyberforge-content.git\" }\n\nif\
+        \ ($GitlabToken) {\n  $RepoAuthUrl = $RepoUrl -replace \"https://\", \"https://oauth2:$($GitlabToken)@\"\
+        \n} else {\n  $RepoAuthUrl = $RepoUrl\n}\n\n# --- Sparse-checkout only the\
+        \ challenge directory ---\n$WorkDir = \"C:\\\\CyberForge\\\\killchain-003-vpn-breach-ransomware\"\
+        \nif (Test-Path \"$WorkDir\\.git\") {\n  Write-Host '[CF] Updating existing\
+        \ clone...'\n  git -C $WorkDir pull --ff-only\n} else {\n  New-Item -ItemType\
+        \ Directory -Force -Path $WorkDir | Out-Null\n  git clone --depth 1 --filter=blob:none\
+        \ --sparse $RepoAuthUrl $WorkDir\n  git -C $WorkDir sparse-checkout set \"\
+        killchains/killchain-003-vpn-breach-ransomware\"\n}\n\n# --- Change into challenge\
+        \ directory ---\nSet-Location \"$WorkDir\\\\killchains\\\\killchain-003-vpn-breach-ransomware\"\
+        \n\n# --- Run challenge setup ---\npowershell -ExecutionPolicy Bypass -File\
+        \ .\\\\setup.ps1\n\nWrite-Host \"[CF] Challenge killchain-003-vpn-breach-ransomware\
+        \ deployed successfully.\""

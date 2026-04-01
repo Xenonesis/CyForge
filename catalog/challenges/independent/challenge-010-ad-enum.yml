@@ -4,6 +4,7 @@ description: Enumerate trust paths and privileged relationships in Active Direct
 domain: AD Attacks
 content_type: independent
 difficulty: medium
+stack: ad
 gitlab:
   repo_url: https://gitlab.example.com/cyberforge/cyberforge-content.git
   content_path: challenges/challenge-010-ad-enum
@@ -14,15 +15,24 @@ technique:
 platforms:
   windows:
     psh:
-      command: '$RepoUrl = if ($env:REPO_URL) { $env:REPO_URL } else { "https://gitlab.example.com/cyberforge/cyberforge-content.git"
-        }
-
-        $WorkDir = "C:\\Temp\\cyberforge-challenge-010-ad-enum"
-
-        if (Test-Path $WorkDir) { Remove-Item -Recurse -Force $WorkDir }
-
-        git clone --depth 1 $RepoUrl $WorkDir
-
-        Set-Location "$WorkDir\\challenges\\challenge-010-ad-enum"
-
-        powershell -ExecutionPolicy Bypass -File .\\setup.ps1'
+      command: "$ErrorActionPreference = \"Stop\"\nWrite-Host \"[CF] CyberForge challenge\
+        \ deploy starting: challenge-010-ad-enum\"\n\n# --- Authenticate to GitLab\
+        \ ---\n$GitlabToken = if ($env:GITLAB_TOKEN) { $env:GITLAB_TOKEN } elseif\
+        \ (\"#{gitlab.token}\" -ne \"#{gitlab.token}\") { \"#{gitlab.token}\" } else\
+        \ { \"\" }\n$RepoUrl = if ($env:REPO_URL) { $env:REPO_URL } else { \"https://gitlab.example.com/cyberforge/cyberforge-content.git\"\
+        \ }\n\nif ($GitlabToken) {\n  $RepoAuthUrl = $RepoUrl -replace \"https://\"\
+        , \"https://oauth2:$($GitlabToken)@\"\n} else {\n  $RepoAuthUrl = $RepoUrl\n\
+        }\n\n# --- Sparse-checkout only the challenge directory ---\n$WorkDir = \"\
+        C:\\\\CyberForge\\\\challenge-010-ad-enum\"\nif (Test-Path \"$WorkDir\\.git\"\
+        ) {\n  Write-Host '[CF] Updating existing clone...'\n  git -C $WorkDir pull\
+        \ --ff-only\n} else {\n  New-Item -ItemType Directory -Force -Path $WorkDir\
+        \ | Out-Null\n  git clone --depth 1 --filter=blob:none --sparse $RepoAuthUrl\
+        \ $WorkDir\n  git -C $WorkDir sparse-checkout set \"challenges/challenge-010-ad-enum\"\
+        \n}\n\n# --- Change into challenge directory ---\nSet-Location \"$WorkDir\\\
+        \\challenges\\\\challenge-010-ad-enum\"\n\n# --- Install dependencies ---\n\
+        if (-not (Get-Module -ListAvailable -Name ActiveDirectory)) {\n  Add-WindowsFeature\
+        \ -Name RSAT-AD-PowerShell -IncludeAllSubFeature 2>$null\n}\n\n# --- Run challenge\
+        \ setup ---\npowershell -ExecutionPolicy Bypass -File .\\\\setup.ps1\n\nWrite-Host\
+        \ '[CF] Running health check...'\n(Get-ADDomain).DNSRoot\nWrite-Host '[CF]\
+        \ Health check passed.'\n\nWrite-Host \"[CF] Challenge challenge-010-ad-enum\
+        \ deployed successfully.\""

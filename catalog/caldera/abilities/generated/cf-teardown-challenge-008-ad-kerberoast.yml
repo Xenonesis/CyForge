@@ -1,0 +1,18 @@
+- id: cf-teardown-challenge-008-ad-kerberoast
+  name: '[CF] Teardown: Active Directory Kerberoasting'
+  description: Cleanly tear down and remove the hosted environment for challenge-008-ad-kerberoast.
+  tactic: defense-evasion
+  technique:
+    attack_id: T1070
+    name: Indicator Removal
+  platforms:
+    windows:
+      psh:
+        command: "$ErrorActionPreference = \"SilentlyContinue\"\nWrite-Host \"[CF]\
+          \ Tearing down: challenge-008-ad-kerberoast\"\n$WorkDir = \"C:\\\\CyberForge\\\
+          \\challenge-008-ad-kerberoast\"\nif (Test-Path \"$WorkDir\\\\\" + \"challenges\\\
+          \\challenge-008-ad-kerberoast\") {\n  Set-Location \"$WorkDir\\\\\" + \"\
+          challenges\\\\challenge-008-ad-kerberoast\"\n  if (Test-Path \".\\\\\" +\
+          \ \"teardown.ps1\") {\n    powershell -ExecutionPolicy Bypass -File .\\\\\
+          teardown.ps1\n  }\n}\nRemove-Item -Recurse -Force $WorkDir -ErrorAction\
+          \ SilentlyContinue\nWrite-Host \"[CF] Teardown complete: challenge-008-ad-kerberoast\""

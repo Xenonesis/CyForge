@@ -1,0 +1,34 @@
+- id: cf-deploy-challenge-011-ot-modbus
+  name: '[CF] Deploy: ICS Modbus Unauthorized Write'
+  description: 'Pull challenge-011-ot-modbus from GitLab and host it on the target
+    machine.
+
+    Domain: OT/ ICS Systems | Difficulty: hard | Stack: scada'
+  tactic: impact
+  technique:
+    attack_id: T0831
+    name: Manipulation of Control
+  platforms:
+    linux:
+      sh:
+        command: "set -e\necho '[CF] CyberForge challenge deploy starting: challenge-011-ot-modbus'\n\
+          \n# --- Authenticate to GitLab ---\nGITLAB_TOKEN=\"${GITLAB_TOKEN:-#{gitlab.token}}\"\
+          \nREPO_URL=\"${REPO_URL:-https://gitlab.example.com/cyberforge/cyberforge-content.git}\"\
+          \n\n# Inject token into URL if provided\nif [ -n \"$GITLAB_TOKEN\" ] &&\
+          \ [ \"$GITLAB_TOKEN\" != \"#{gitlab.token}\" ]; then\n  REPO_AUTH_URL=\"\
+          $(echo \"$REPO_URL\" | sed \"s|https://|https://oauth2:${GITLAB_TOKEN}@|\"\
+          )\"\nelse\n  REPO_AUTH_URL=\"$REPO_URL\"\nfi\n\n# --- Sparse-checkout only\
+          \ the challenge directory ---\nWORKDIR=\"/opt/cyberforge/challenge-011-ot-modbus\"\
+          \nif [ -d \"$WORKDIR/.git\" ]; then\n  echo '[CF] Updating existing clone...'\n\
+          \  git -C \"$WORKDIR\" pull --ff-only\nelse\n  mkdir -p \"$WORKDIR\"\n \
+          \ git clone --depth 1 --filter=blob:none --sparse \"$REPO_AUTH_URL\" \"\
+          $WORKDIR\"\n  git -C \"$WORKDIR\" sparse-checkout set \"challenges/challenge-011-ot-modbus\"\
+          \nfi\n\n# --- Change into challenge directory ---\ncd \"$WORKDIR/challenges/challenge-011-ot-modbus\"\
+          \n\n# --- Install dependencies ---\nif ! command -v python3 >/dev/null 2>&1;\
+          \ then\n  apt-get update -q && apt-get install -y python3 python3-pip\n\
+          fi\npip3 install pymodbus 2>/dev/null || true\n\n# --- Run challenge setup\
+          \ ---\nchmod +x setup.sh\n./setup.sh\n\necho '[CF] Running health check...'\n\
+          python3 -c \"from pymodbus.client import ModbusTcpClient; c=ModbusTcpClient('localhost',port=502);\
+          \ print('Modbus OK' if c.connect() else 'Modbus FAIL')\"\necho '[CF] Health\
+          \ check passed.'\n\necho '[CF] Challenge challenge-011-ot-modbus deployed\
+          \ successfully.'"

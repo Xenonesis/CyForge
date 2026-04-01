@@ -1,0 +1,18 @@
+- id: cf-teardown-killchain-001-web-to-ad-ws01
+  name: '[CF] Teardown machine: ws01 (killchain-001-web-to-ad)'
+  description: Cleanly tear down and remove the hosted environment for killchain-001-web-to-ad-ws01.
+  tactic: defense-evasion
+  technique:
+    attack_id: T1070
+    name: Indicator Removal
+  platforms:
+    windows:
+      psh:
+        command: "$ErrorActionPreference = \"SilentlyContinue\"\nWrite-Host \"[CF]\
+          \ Tearing down: killchain-001-web-to-ad-ws01\"\n$WorkDir = \"C:\\\\CyberForge\\\
+          \\killchain-001-web-to-ad-ws01\"\nif (Test-Path \"$WorkDir\\\\\" + \"killchains\\\
+          \\killchain-001-web-to-ad\\\\ws01\") {\n  Set-Location \"$WorkDir\\\\\"\
+          \ + \"killchains\\\\killchain-001-web-to-ad\\\\ws01\"\n  if (Test-Path \"\
+          .\\\\\" + \"teardown.ps1\") {\n    powershell -ExecutionPolicy Bypass -File\
+          \ .\\\\teardown.ps1\n  }\n}\nRemove-Item -Recurse -Force $WorkDir -ErrorAction\
+          \ SilentlyContinue\nWrite-Host \"[CF] Teardown complete: killchain-001-web-to-ad-ws01\""

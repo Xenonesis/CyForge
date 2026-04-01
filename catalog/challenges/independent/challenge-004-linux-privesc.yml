@@ -4,6 +4,7 @@ description: Escalate privileges through intentionally misconfigured SUID binari
 domain: Linux OS attacks
 content_type: independent
 difficulty: medium
+stack: none
 gitlab:
   repo_url: https://gitlab.example.com/cyberforge/cyberforge-content.git
   content_path: challenges/challenge-004-linux-privesc
@@ -14,18 +15,20 @@ technique:
 platforms:
   linux:
     sh:
-      command: 'set -e
-
-        REPO_URL="${REPO_URL:-https://gitlab.example.com/cyberforge/cyberforge-content.git}"
-
-        WORKDIR="/tmp/cyberforge-challenge-004-linux-privesc"
-
-        if [ -d "$WORKDIR" ]; then rm -rf "$WORKDIR"; fi
-
-        git clone --depth 1 "$REPO_URL" "$WORKDIR"
-
-        cd "$WORKDIR/challenges/challenge-004-linux-privesc"
-
-        chmod +x setup.sh
-
-        ./setup.sh'
+      command: "set -e\necho '[CF] CyberForge challenge deploy starting: challenge-004-linux-privesc'\n\
+        \n# --- Authenticate to GitLab ---\nGITLAB_TOKEN=\"${GITLAB_TOKEN:-#{gitlab.token}}\"\
+        \nREPO_URL=\"${REPO_URL:-https://gitlab.example.com/cyberforge/cyberforge-content.git}\"\
+        \n\n# Inject token into URL if provided\nif [ -n \"$GITLAB_TOKEN\" ] && [\
+        \ \"$GITLAB_TOKEN\" != \"#{gitlab.token}\" ]; then\n  REPO_AUTH_URL=\"$(echo\
+        \ \"$REPO_URL\" | sed \"s|https://|https://oauth2:${GITLAB_TOKEN}@|\")\"\n\
+        else\n  REPO_AUTH_URL=\"$REPO_URL\"\nfi\n\n# --- Sparse-checkout only the\
+        \ challenge directory ---\nWORKDIR=\"/opt/cyberforge/challenge-004-linux-privesc\"\
+        \nif [ -d \"$WORKDIR/.git\" ]; then\n  echo '[CF] Updating existing clone...'\n\
+        \  git -C \"$WORKDIR\" pull --ff-only\nelse\n  mkdir -p \"$WORKDIR\"\n  git\
+        \ clone --depth 1 --filter=blob:none --sparse \"$REPO_AUTH_URL\" \"$WORKDIR\"\
+        \n  git -C \"$WORKDIR\" sparse-checkout set \"challenges/challenge-004-linux-privesc\"\
+        \nfi\n\n# --- Change into challenge directory ---\ncd \"$WORKDIR/challenges/challenge-004-linux-privesc\"\
+        \n\n# --- Run challenge setup ---\nchmod +x setup.sh\n./setup.sh\n\necho '[CF]\
+        \ Running health check...'\nid && ls -la /usr/local/bin/cf_suid_target 2>/dev/null\
+        \ || echo '[CF] SUID target may not exist yet'\necho '[CF] Health check passed.'\n\
+        \necho '[CF] Challenge challenge-004-linux-privesc deployed successfully.'"

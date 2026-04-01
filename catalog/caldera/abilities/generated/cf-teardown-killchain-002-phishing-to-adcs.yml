@@ -1,0 +1,27 @@
+- id: cf-teardown-killchain-002-phishing-to-adcs
+  name: '[CF] Teardown (fleet): Phishing, Lateral Movement, ADCS Abuse'
+  description: Cleanly tear down and remove the hosted environment for killchain-002-phishing-to-adcs.
+  tactic: defense-evasion
+  technique:
+    attack_id: T1070
+    name: Indicator Removal
+  platforms:
+    linux:
+      sh:
+        command: "set -e\necho '[CF] Tearing down: killchain-002-phishing-to-adcs'\n\
+          WORKDIR=\"/opt/cyberforge/killchain-002-phishing-to-adcs\"\nif [ -d \"$WORKDIR/killchains/killchain-002-phishing-to-adcs\"\
+          \ ]; then\n  cd \"$WORKDIR/killchains/killchain-002-phishing-to-adcs\"\n\
+          \  if [ -f \"teardown.sh\" ]; then\n    chmod +x teardown.sh\n    ./teardown.sh\n\
+          \  else\n    echo '[CF] No teardown script found — stopping any Docker containers\
+          \ if present'\n    docker compose down --remove-orphans 2>/dev/null || true\n\
+          \  fi\nfi\nrm -rf \"$WORKDIR\"\necho '[CF] Teardown complete: killchain-002-phishing-to-adcs'"
+    windows:
+      psh:
+        command: "$ErrorActionPreference = \"SilentlyContinue\"\nWrite-Host \"[CF]\
+          \ Tearing down: killchain-002-phishing-to-adcs\"\n$WorkDir = \"C:\\\\CyberForge\\\
+          \\killchain-002-phishing-to-adcs\"\nif (Test-Path \"$WorkDir\\\\\" + \"\
+          killchains\\\\killchain-002-phishing-to-adcs\") {\n  Set-Location \"$WorkDir\\\
+          \\\" + \"killchains\\\\killchain-002-phishing-to-adcs\"\n  if (Test-Path\
+          \ \".\\\\\" + \"teardown.ps1\") {\n    powershell -ExecutionPolicy Bypass\
+          \ -File .\\\\teardown.ps1\n  }\n}\nRemove-Item -Recurse -Force $WorkDir\
+          \ -ErrorAction SilentlyContinue\nWrite-Host \"[CF] Teardown complete: killchain-002-phishing-to-adcs\""
