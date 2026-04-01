@@ -3,3 +3,7 @@ __pycache__/
 .venv/
 .pytest_cache/
 .ruff_cache/
+# Secrets — never commit your .env file
+.env
+# SQLite dev database
+*.db

@@ -46,9 +46,22 @@ else:
 
 provisioner = build_provisioner(
     mode=settings.provisioner_mode,
+    # VirtualBox
     vbox_attacker_template=settings.vbox_attacker_template,
     vbox_target_template=settings.vbox_target_template,
     vbox_dry_run=settings.vbox_dry_run,
+    # SSH
+    ssh_target_host=settings.ssh_target_host,
+    ssh_target_user=settings.ssh_target_user,
+    ssh_target_port=settings.ssh_target_port,
+    ssh_identity_file=settings.ssh_identity_file,
+    ssh_attacker_host=settings.ssh_attacker_host,
+    # Docker
+    docker_workdir=settings.docker_workdir,
+    docker_service_port=settings.docker_service_port,
+    # GitLab
+    gitlab_repo_url=settings.gitlab_repo_url,
+    gitlab_token=settings.gitlab_token,
 )
 orchestrator = LabOrchestrator(repository=repository, provisioner=provisioner)
 
@@ -61,7 +74,11 @@ async def app_lifespan(_: FastAPI):
 
     preflight_issues = provisioner.preflight()
     if preflight_issues:
-        raise RuntimeError(f"provisioner preflight failed: {preflight_issues}")
+        missing = settings.provisioner_missing_config()
+        detail = " | ".join(preflight_issues)
+        if missing:
+            detail += f" | Missing config: {', '.join(missing)}"
+        raise RuntimeError(f"Provisioner preflight failed: {detail}")
 
     independent, independent_failures = load_challenge_catalog(INDEPENDENT_CATALOG_ROOT)
     killchains, killchain_failures = load_challenge_catalog(KILLCHAIN_CATALOG_ROOT)
@@ -182,11 +199,17 @@ def healthcheck() -> dict[str, str]:
 
 
 @app.get("/api/v1/system/info")
-def system_info() -> dict[str, str | bool]:
+def system_info() -> dict:
+    missing = settings.provisioner_missing_config()
     return {
-        "repository_backend": settings.repository_backend,
-        "provisioner_mode": settings.provisioner_mode,
-        "virtualbox_dry_run": settings.vbox_dry_run,
+        "provisioner_mode":      settings.provisioner_mode,
+        "provisioner_ready":     len(missing) == 0,
+        "provisioner_missing":   missing,
+        "repository_backend":    settings.repository_backend,
+        "gitlab_repo_configured": bool(settings.gitlab_repo_url),
+        "ssh_target_host":       settings.ssh_target_host or None,
+        "vbox_dry_run":          settings.vbox_dry_run,
+        "content_validation":    settings.validate_content_structure,
     }
 
 
