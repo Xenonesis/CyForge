@@ -1,0 +1,31 @@
+id: challenge-007-web-file-upload-rce
+name: Malicious File Upload to RCE
+description: Upload validation bypass leading to remote code execution.
+domain: Web Attack Scenarios
+content_type: independent
+difficulty: medium
+gitlab:
+  repo_url: https://gitlab.example.com/cyberforge/cyberforge-content.git
+  content_path: challenges/challenge-007-web-file-upload-rce
+tactic: execution
+technique:
+  attack_id: T1505.003
+  name: Web Shell
+platforms:
+  linux:
+    sh:
+      command: 'set -e
+
+        REPO_URL="${REPO_URL:-https://gitlab.example.com/cyberforge/cyberforge-content.git}"
+
+        WORKDIR="/tmp/cyberforge-challenge-007-web-file-upload-rce"
+
+        if [ -d "$WORKDIR" ]; then rm -rf "$WORKDIR"; fi
+
+        git clone --depth 1 "$REPO_URL" "$WORKDIR"
+
+        cd "$WORKDIR/challenges/challenge-007-web-file-upload-rce"
+
+        chmod +x setup.sh
+
+        ./setup.sh'

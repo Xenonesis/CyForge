@@ -1,0 +1,64 @@
+id: killchain-002-phishing-to-adcs
+name: Phishing, Lateral Movement, ADCS Abuse
+description: Email lure to workstation compromise to certificate abuse.
+content_type: killchain
+domain: Complete Cyber Kill Chain Scenario (Recon to Action on Objective)
+difficulty: hard
+tactic: execution
+technique:
+  attack_id: T1059.001
+  name: PowerShell
+platforms:
+  linux:
+    sh:
+      command: 'set -e
+
+        REPO_URL="${REPO_URL:-https://gitlab.example.com/cyberforge/cyberforge-content.git}"
+
+        WORKDIR="/tmp/cyberforge-killchain-002-phishing-to-adcs"
+
+        if [ -d "$WORKDIR" ]; then rm -rf "$WORKDIR"; fi
+
+        git clone --depth 1 "$REPO_URL" "$WORKDIR"
+
+        cd "$WORKDIR/killchains/killchain-002-phishing-to-adcs"
+
+        chmod +x setup.sh
+
+        ./setup.sh'
+  windows:
+    psh:
+      command: '$RepoUrl = if ($env:REPO_URL) { $env:REPO_URL } else { "https://gitlab.example.com/cyberforge/cyberforge-content.git"
+        }
+
+        $WorkDir = "C:\\Temp\\cyberforge-killchain-002-phishing-to-adcs"
+
+        if (Test-Path $WorkDir) { Remove-Item -Recurse -Force $WorkDir }
+
+        git clone --depth 1 $RepoUrl $WorkDir
+
+        Set-Location "$WorkDir\\killchains\\killchain-002-phishing-to-adcs"
+
+        powershell -ExecutionPolicy Bypass -File .\\setup.ps1'
+machines:
+- machine_id: mail01
+  os: linux
+  setup_script: mail01_setup.sh
+- machine_id: ws02
+  os: windows
+  setup_script: ws02_setup.ps1
+- machine_id: app02
+  os: linux
+  setup_script: app02_setup.sh
+- machine_id: dc02
+  os: windows
+  setup_script: dc02_setup.ps1
+vulnerabilities:
+- Phishing macro execution
+- Token theft via in-memory injection
+- Linux foothold escalation with kernel misconfig
+- AD Enumeration and trust discovery
+- ADCS template abuse for privilege escalation
+gitlab:
+  repo_url: https://gitlab.example.com/cyberforge/cyberforge-content.git
+  content_path: killchains/killchain-002-phishing-to-adcs

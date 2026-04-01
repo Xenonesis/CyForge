@@ -1,0 +1,13 @@
+id: challenge-003-auth-bypass
+name: Authentication Bypass Basics
+description: Training lab for weak authentication logic and session validation bypass scenarios.
+tactic: credential-access
+technique:
+  attack_id: T1078
+  name: Valid Accounts
+platforms:
+  linux:
+    sh:
+      command: |
+        echo "Preparing challenge-003-auth-bypass"
+        ./setup.sh

@@ -1,0 +1,64 @@
+id: killchain-003-vpn-breach-ransomware
+name: VPN Breach to Ransomware Objective
+description: Credential access and hybrid AD/Linux movement ending in action on objective.
+content_type: killchain
+domain: Complete Cyber Kill Chain Scenario (Recon to Action on Objective)
+difficulty: hard
+tactic: impact
+technique:
+  attack_id: T1486
+  name: Data Encrypted for Impact
+platforms:
+  linux:
+    sh:
+      command: 'set -e
+
+        REPO_URL="${REPO_URL:-https://gitlab.example.com/cyberforge/cyberforge-content.git}"
+
+        WORKDIR="/tmp/cyberforge-killchain-003-vpn-breach-ransomware"
+
+        if [ -d "$WORKDIR" ]; then rm -rf "$WORKDIR"; fi
+
+        git clone --depth 1 "$REPO_URL" "$WORKDIR"
+
+        cd "$WORKDIR/killchains/killchain-003-vpn-breach-ransomware"
+
+        chmod +x setup.sh
+
+        ./setup.sh'
+  windows:
+    psh:
+      command: '$RepoUrl = if ($env:REPO_URL) { $env:REPO_URL } else { "https://gitlab.example.com/cyberforge/cyberforge-content.git"
+        }
+
+        $WorkDir = "C:\\Temp\\cyberforge-killchain-003-vpn-breach-ransomware"
+
+        if (Test-Path $WorkDir) { Remove-Item -Recurse -Force $WorkDir }
+
+        git clone --depth 1 $RepoUrl $WorkDir
+
+        Set-Location "$WorkDir\\killchains\\killchain-003-vpn-breach-ransomware"
+
+        powershell -ExecutionPolicy Bypass -File .\\setup.ps1'
+machines:
+- machine_id: vpn01
+  os: linux
+  setup_script: vpn01_setup.sh
+- machine_id: ws03
+  os: windows
+  setup_script: ws03_setup.ps1
+- machine_id: files01
+  os: windows
+  setup_script: files01_setup.ps1
+- machine_id: ops01
+  os: linux
+  setup_script: ops01_setup.sh
+vulnerabilities:
+- VPN brute-force and credential stuffing
+- Persistence via scheduled task
+- Privilege escalation on file server
+- Lateral movement using pass-the-hash
+- Ransomware-style impact simulation
+gitlab:
+  repo_url: https://gitlab.example.com/cyberforge/cyberforge-content.git
+  content_path: killchains/killchain-003-vpn-breach-ransomware

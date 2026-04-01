@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>cyforge Control Deck</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100..800&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css" />
+  <link rel="icon" type="image/png" href="/static/cobra_favicon.png" />
+</head>
+<body>
+  <div class="ambient-glow"></div>
+  <main class="layout">
+    <header class="hero panel">
+      <div style="display: flex; gap: 1.25rem; align-items: center; margin-bottom: 0.5rem;">
+        <img src="/static/cobra_favicon.png" alt="Cobra Logo" style="height: 64px; width: 64px; border: 2px solid var(--primary); padding: 4px; border-radius: 0; background: #000;" />
+        <div>
+          <p class="eyebrow" style="margin-bottom: 0.25rem;">cyforge</p>
+          <h1>Range Control Deck</h1>
+        </div>
+      </div>
+      <p class="sub">Deploy and reset challenge labs with lifecycle visibility from one surface.</p>
+      <div class="header-actions">
+        <label class="theme-toggle" for="themeToggle">
+          <input id="themeToggle" type="checkbox" />
+          <span>Dark Mode</span>
+        </label>
+      </div>
+    </header>
+
+    <section class="panel operation-strip">
+      <div class="chip-group">
+        <span class="chip" id="lastActionChip">Idle</span>
+        <span class="chip chip-secondary" id="requestIdChip">Request: -</span>
+      </div>
+      <p id="flashMessage" class="flash">Ready.</p>
+    </section>
+
+    <section class="panel controls">
+      <div class="field">
+        <label for="contentTypeSelect">Content Type</label>
+        <select id="contentTypeSelect">
+          <option value="all">All</option>
+          <option value="independent">Independent Challenges</option>
+          <option value="killchain">Kill Chains</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="domainSelect">Domain</label>
+        <select id="domainSelect">
+          <option value="all">All Domains</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="difficultySelect">Difficulty</label>
+        <select id="difficultySelect">
+          <option value="all">All Difficulties</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="userId">Operator ID</label>
+        <input id="userId" value="student-01" />
+      </div>
+      <div class="field">
+        <label for="challengeSelect">Challenge</label>
+        <select id="challengeSelect"></select>
+      </div>
+      <div class="actions">
+        <button id="deployBtn" class="btn btn-primary">Deploy Lab</button>
+        <button id="refreshBtn" class="btn btn-secondary">Refresh Challenges</button>
+      </div>
+    </section>
+
+    <section class="panel operation-strip summary-strip">
+      <div class="chip-group" id="summaryChips"></div>
+    </section>
+
+    <div class="dual-grid">
+      <section class="panel status">
+        <h2>Session Status</h2>
+        <div class="status-grid">
+          <article>
+            <h3>Lab ID</h3>
+            <p id="labId">-</p>
+          </article>
+          <article>
+            <h3>State</h3>
+            <p id="labState" class="state-pill">-</p>
+          </article>
+          <article>
+            <h3>Target</h3>
+            <p id="targetIp">-</p>
+          </article>
+          <article>
+            <h3>Attacker</h3>
+            <p id="attackerIp">-</p>
+          </article>
+        </div>
+        <div class="actions">
+          <button id="resetBtn" class="btn btn-warn" disabled>Reset Lab</button>
+        </div>
+        <pre id="rawPayload" class="payload">No session yet.</pre>
+      </section>
+
+      <section class="panel audit-panel">
+        <h2>Audit Explorer</h2>
+        <div class="audit-filters">
+          <div class="field compact">
+            <label for="auditAction">Action</label>
+            <select id="auditAction">
+              <option value="">All</option>
+              <option value="deploy">Deploy</option>
+              <option value="reset">Reset</option>
+            </select>
+          </div>
+          <div class="field compact">
+            <label for="auditStatus">Status</label>
+            <select id="auditStatus">
+              <option value="">All</option>
+              <option value="requested">Requested</option>
+              <option value="success">Success</option>
+              <option value="failed">Failed</option>
+            </select>
+          </div>
+          <div class="field compact">
+            <label for="auditRequest">Request ID</label>
+            <input id="auditRequest" placeholder="optional" />
+          </div>
+        </div>
+        <div class="actions">
+          <button id="auditApplyBtn" class="btn btn-secondary">Apply Filters</button>
+          <button id="auditClearBtn" class="btn btn-ghost">Clear</button>
+        </div>
+
+        <div id="auditMeta" class="meta">No events loaded yet.</div>
+        <div id="auditList" class="audit-list"></div>
+        <div class="actions">
+          <button id="auditPrevBtn" class="btn btn-ghost">Previous</button>
+          <button id="auditNextBtn" class="btn btn-ghost">Next</button>
+        </div>
+      </section>
+    </div>
+  </main>
+  <script src="/static/app.js" defer></script>
+</body>
+</html>

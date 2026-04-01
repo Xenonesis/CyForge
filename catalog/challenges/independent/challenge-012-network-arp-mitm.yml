@@ -1,0 +1,31 @@
+id: challenge-012-network-arp-mitm
+name: ARP Spoofing MITM
+description: Launch ARP spoofing and traffic interception against isolated targets.
+domain: Network Attacks
+content_type: independent
+difficulty: medium
+gitlab:
+  repo_url: https://gitlab.example.com/cyberforge/cyberforge-content.git
+  content_path: challenges/challenge-012-network-arp-mitm
+tactic: credential-access
+technique:
+  attack_id: T1557.002
+  name: ARP Cache Poisoning
+platforms:
+  linux:
+    sh:
+      command: 'set -e
+
+        REPO_URL="${REPO_URL:-https://gitlab.example.com/cyberforge/cyberforge-content.git}"
+
+        WORKDIR="/tmp/cyberforge-challenge-012-network-arp-mitm"
+
+        if [ -d "$WORKDIR" ]; then rm -rf "$WORKDIR"; fi
+
+        git clone --depth 1 "$REPO_URL" "$WORKDIR"
+
+        cd "$WORKDIR/challenges/challenge-012-network-arp-mitm"
+
+        chmod +x setup.sh
+
+        ./setup.sh'

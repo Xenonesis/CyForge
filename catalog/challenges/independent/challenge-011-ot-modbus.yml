@@ -1,0 +1,31 @@
+id: challenge-011-ot-modbus
+name: ICS Modbus Unauthorized Write
+description: Manipulate Modbus registers in an OT simulation environment.
+domain: OT/ ICS Systems
+content_type: independent
+difficulty: hard
+gitlab:
+  repo_url: https://gitlab.example.com/cyberforge/cyberforge-content.git
+  content_path: challenges/challenge-011-ot-modbus
+tactic: impact
+technique:
+  attack_id: T0831
+  name: Manipulation of Control
+platforms:
+  linux:
+    sh:
+      command: 'set -e
+
+        REPO_URL="${REPO_URL:-https://gitlab.example.com/cyberforge/cyberforge-content.git}"
+
+        WORKDIR="/tmp/cyberforge-challenge-011-ot-modbus"
+
+        if [ -d "$WORKDIR" ]; then rm -rf "$WORKDIR"; fi
+
+        git clone --depth 1 "$REPO_URL" "$WORKDIR"
+
+        cd "$WORKDIR/challenges/challenge-011-ot-modbus"
+
+        chmod +x setup.sh
+
+        ./setup.sh'

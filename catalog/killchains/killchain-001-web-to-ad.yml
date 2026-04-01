@@ -1,0 +1,64 @@
+id: killchain-001-web-to-ad
+name: Web Pivot to Domain Compromise
+description: APT-style kill chain from web foothold to AD dominance.
+content_type: killchain
+domain: Complete Cyber Kill Chain Scenario (Recon to Action on Objective)
+difficulty: hard
+tactic: execution
+technique:
+  attack_id: T1059.004
+  name: Unix Shell
+platforms:
+  linux:
+    sh:
+      command: 'set -e
+
+        REPO_URL="${REPO_URL:-https://gitlab.example.com/cyberforge/cyberforge-content.git}"
+
+        WORKDIR="/tmp/cyberforge-killchain-001-web-to-ad"
+
+        if [ -d "$WORKDIR" ]; then rm -rf "$WORKDIR"; fi
+
+        git clone --depth 1 "$REPO_URL" "$WORKDIR"
+
+        cd "$WORKDIR/killchains/killchain-001-web-to-ad"
+
+        chmod +x setup.sh
+
+        ./setup.sh'
+  windows:
+    psh:
+      command: '$RepoUrl = if ($env:REPO_URL) { $env:REPO_URL } else { "https://gitlab.example.com/cyberforge/cyberforge-content.git"
+        }
+
+        $WorkDir = "C:\\Temp\\cyberforge-killchain-001-web-to-ad"
+
+        if (Test-Path $WorkDir) { Remove-Item -Recurse -Force $WorkDir }
+
+        git clone --depth 1 $RepoUrl $WorkDir
+
+        Set-Location "$WorkDir\\killchains\\killchain-001-web-to-ad"
+
+        powershell -ExecutionPolicy Bypass -File .\\setup.ps1'
+machines:
+- machine_id: web01
+  os: linux
+  setup_script: web01_setup.sh
+- machine_id: pivot01
+  os: linux
+  setup_script: pivot01_setup.sh
+- machine_id: ws01
+  os: windows
+  setup_script: ws01_setup.ps1
+- machine_id: dc01
+  os: windows
+  setup_script: dc01_setup.ps1
+vulnerabilities:
+- Initial Access via vulnerable upload endpoint
+- Privilege Escalation using misconfigured sudoers
+- Credential Dumping from compromised workstation
+- Lateral Movement via SMB and WinRM
+- Domain Privilege Escalation via ADCS misconfiguration
+gitlab:
+  repo_url: https://gitlab.example.com/cyberforge/cyberforge-content.git
+  content_path: killchains/killchain-001-web-to-ad

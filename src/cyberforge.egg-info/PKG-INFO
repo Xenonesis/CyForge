@@ -1,0 +1,111 @@
+Metadata-Version: 2.4
+Name: cyberforge
+Version: 0.1.0
+Summary: CyberForge MVP orchestration API for cyber range lab deployment and reset
+Author: CyberForge Team
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: fastapi<1.0.0,>=0.115.0
+Requires-Dist: uvicorn[standard]<1.0.0,>=0.35.0
+Requires-Dist: PyYAML<7.0.0,>=6.0.1
+Requires-Dist: jsonschema<5.0.0,>=4.23.0
+Requires-Dist: pydantic<3.0.0,>=2.10.0
+Requires-Dist: sqlalchemy<3.0.0,>=2.0.40
+Requires-Dist: psycopg[binary]<4.0.0,>=3.2.6
+Provides-Extra: dev
+Requires-Dist: pytest<9.0.0,>=8.3.0; extra == "dev"
+Requires-Dist: httpx<1.0.0,>=0.28.0; extra == "dev"
+Requires-Dist: ruff<1.0.0,>=0.11.0; extra == "dev"
+
+# CyberForge
+
+CyberForge is an automated cyber range orchestration platform. This repository contains the first MVP implementation slice:
+
+- Challenge catalog loading and schema validation
+- Lab lifecycle state machine
+- Deploy/reset API endpoints
+- CALDERA ability templates and sample challenge definitions
+- SQLAlchemy-backed lab/session persistence (PostgreSQL-compatible)
+- Local VirtualBox provisioner adapter (configurable, with dry-run)
+- Minimal web control deck for challenge deploy/reset actions
+- Startup preflight for repository connectivity and provisioner readiness
+- Persistent deploy/reset audit events with API retrieval
+
+## MVP Scope (Current)
+
+- 5 independent challenge definitions
+- Deterministic lab state transitions: `idle -> deploying -> active -> resetting`
+- Reset failure handling: transitions to `failed` with error context
+- PostgreSQL-compatible persistence for challenges and lab sessions
+- VirtualBox provisioner implementation with mode switching
+- Web UI served from `/`
+
+## Quickstart
+
+1. Create a virtual environment.
+2. Install dependencies:
+
+```powershell
+pip install -e .[dev]
+```
+
+3. Run the API:
+
+```powershell
+uvicorn cyberforge.main:app --reload
+```
+
+4. Open API docs:
+
+- http://127.0.0.1:8000/docs
+- http://127.0.0.1:8000/
+
+## Configuration
+
+The application is configured with environment variables:
+
+- `CYBERFORGE_REPOSITORY`: `sqlalchemy` (default) or `memory`
+- `CYBERFORGE_DATABASE_URL`: SQLAlchemy URL (default `sqlite+pysqlite:///./cyberforge.db`)
+- `CYBERFORGE_PROVISIONER`: `mock` (default) or `virtualbox`
+- `CYBERFORGE_VBOX_ATTACKER_TEMPLATE`: VirtualBox attacker template VM name
+- `CYBERFORGE_VBOX_TARGET_TEMPLATE`: VirtualBox target template VM name
+- `CYBERFORGE_VBOX_DRY_RUN`: `true` (default) or `false`
+
+### PostgreSQL Example
+
+```powershell
+$env:CYBERFORGE_DATABASE_URL = "postgresql+psycopg://postgres:postgres@localhost:5432/cyberforge"
+$env:CYBERFORGE_REPOSITORY = "sqlalchemy"
+uvicorn cyberforge.main:app --reload
+```
+
+### VirtualBox Example
+
+```powershell
+$env:CYBERFORGE_PROVISIONER = "virtualbox"
+$env:CYBERFORGE_VBOX_DRY_RUN = "false"
+$env:CYBERFORGE_VBOX_ATTACKER_TEMPLATE = "cf-attacker-template"
+$env:CYBERFORGE_VBOX_TARGET_TEMPLATE = "cf-target-template"
+uvicorn cyberforge.main:app --reload
+```
+
+## Audit Events API
+
+- `GET /api/v1/audit/events?limit=100` returns most recent deploy/reset audit events.
+
+Event fields include action, status, lab_id, user_id, details, and created_at.
+
+## Run Tests
+
+```powershell
+pytest
+```
+
+## Folder Layout
+
+- `src/cyberforge`: API and orchestration implementation
+- `catalog/challenges/mvp`: YAML challenge definitions for MVP
+- `catalog/caldera/abilities`: CALDERA ability templates
+- `schemas`: JSON schema for challenge definition validation
+- `tests`: unit and API tests
+- `tasks`: implementation checklist and review notes

@@ -1,0 +1,64 @@
+id: killchain-004-supply-chain-domain
+name: Supply Chain Compromise to Domain Control
+description: Trojanized package delivery leading to cross-platform compromise.
+content_type: killchain
+domain: Complete Cyber Kill Chain Scenario (Recon to Action on Objective)
+difficulty: hard
+tactic: execution
+technique:
+  attack_id: T1195
+  name: Supply Chain Compromise
+platforms:
+  linux:
+    sh:
+      command: 'set -e
+
+        REPO_URL="${REPO_URL:-https://gitlab.example.com/cyberforge/cyberforge-content.git}"
+
+        WORKDIR="/tmp/cyberforge-killchain-004-supply-chain-domain"
+
+        if [ -d "$WORKDIR" ]; then rm -rf "$WORKDIR"; fi
+
+        git clone --depth 1 "$REPO_URL" "$WORKDIR"
+
+        cd "$WORKDIR/killchains/killchain-004-supply-chain-domain"
+
+        chmod +x setup.sh
+
+        ./setup.sh'
+  windows:
+    psh:
+      command: '$RepoUrl = if ($env:REPO_URL) { $env:REPO_URL } else { "https://gitlab.example.com/cyberforge/cyberforge-content.git"
+        }
+
+        $WorkDir = "C:\\Temp\\cyberforge-killchain-004-supply-chain-domain"
+
+        if (Test-Path $WorkDir) { Remove-Item -Recurse -Force $WorkDir }
+
+        git clone --depth 1 $RepoUrl $WorkDir
+
+        Set-Location "$WorkDir\\killchains\\killchain-004-supply-chain-domain"
+
+        powershell -ExecutionPolicy Bypass -File .\\setup.ps1'
+machines:
+- machine_id: build01
+  os: linux
+  setup_script: build01_setup.sh
+- machine_id: deploy01
+  os: windows
+  setup_script: deploy01_setup.ps1
+- machine_id: app03
+  os: linux
+  setup_script: app03_setup.sh
+- machine_id: dc03
+  os: windows
+  setup_script: dc03_setup.ps1
+vulnerabilities:
+- Compromised CI dependency ingestion
+- Code execution via malicious build artifact
+- Credential theft from deployment host
+- Linux to Windows lateral movement
+- Domain admin escalation through AD ACL abuse
+gitlab:
+  repo_url: https://gitlab.example.com/cyberforge/cyberforge-content.git
+  content_path: killchains/killchain-004-supply-chain-domain

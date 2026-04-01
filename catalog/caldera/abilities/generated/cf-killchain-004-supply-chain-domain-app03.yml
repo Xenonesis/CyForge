@@ -1,0 +1,25 @@
+- id: cf-killchain-004-supply-chain-domain-app03
+  name: CyberForge Deploy killchain-004-supply-chain-domain app03
+  description: Deploy machine app03 from killchain-004-supply-chain-domain.
+  tactic: execution
+  technique:
+    attack_id: T1059.004
+    name: Unix Shell
+  platforms:
+    linux:
+      sh:
+        command: 'set -e
+
+          REPO_URL="${REPO_URL:-https://gitlab.example.com/cyberforge/cyberforge-content.git}"
+
+          WORKDIR="/tmp/cyberforge-killchain-004-supply-chain-domain-app03"
+
+          if [ -d "$WORKDIR" ]; then rm -rf "$WORKDIR"; fi
+
+          git clone --depth 1 "$REPO_URL" "$WORKDIR"
+
+          cd "$WORKDIR/killchains/killchain-004-supply-chain-domain/app03"
+
+          chmod +x app03_setup.sh
+
+          ./app03_setup.sh'

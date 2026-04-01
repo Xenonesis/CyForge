@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cyberforge"
+version = "0.1.0"
+description = "CyberForge MVP orchestration API for cyber range lab deployment and reset"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+  { name = "CyberForge Team" }
+]
+dependencies = [
+  "fastapi>=0.115.0,<1.0.0",
+  "uvicorn[standard]>=0.35.0,<1.0.0",
+  "PyYAML>=6.0.1,<7.0.0",
+  "jsonschema>=4.23.0,<5.0.0",
+  "pydantic>=2.10.0,<3.0.0",
+  "sqlalchemy>=2.0.40,<3.0.0",
+  "psycopg[binary]>=3.2.6,<4.0.0"
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3.0,<9.0.0",
+  "httpx>=0.28.0,<1.0.0",
+  "ruff>=0.11.0,<1.0.0"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100

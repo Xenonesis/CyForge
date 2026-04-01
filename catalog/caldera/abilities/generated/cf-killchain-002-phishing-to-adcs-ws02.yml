@@ -1,0 +1,22 @@
+- id: cf-killchain-002-phishing-to-adcs-ws02
+  name: CyberForge Deploy killchain-002-phishing-to-adcs ws02
+  description: Deploy machine ws02 from killchain-002-phishing-to-adcs.
+  tactic: execution
+  technique:
+    attack_id: T1059.001
+    name: PowerShell
+  platforms:
+    windows:
+      psh:
+        command: '$RepoUrl = if ($env:REPO_URL) { $env:REPO_URL } else { "https://gitlab.example.com/cyberforge/cyberforge-content.git"
+          }
+
+          $WorkDir = "C:\\Temp\\cyberforge-killchain-002-phishing-to-adcs-ws02"
+
+          if (Test-Path $WorkDir) { Remove-Item -Recurse -Force $WorkDir }
+
+          git clone --depth 1 $RepoUrl $WorkDir
+
+          Set-Location "$WorkDir\\killchains\\killchain-002-phishing-to-adcs\\ws02"
+
+          powershell -ExecutionPolicy Bypass -File .\\ws02_setup.ps1'

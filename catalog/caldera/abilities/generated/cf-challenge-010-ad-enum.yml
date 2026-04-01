@@ -1,0 +1,22 @@
+- id: cf-challenge-010-ad-enum
+  name: CyberForge Deploy Active Directory Enumeration
+  description: Deploy challenge-010-ad-enum from GitLab content.
+  tactic: discovery
+  technique:
+    attack_id: T1087.002
+    name: Domain Account
+  platforms:
+    windows:
+      psh:
+        command: '$RepoUrl = if ($env:REPO_URL) { $env:REPO_URL } else { "https://gitlab.example.com/cyberforge/cyberforge-content.git"
+          }
+
+          $WorkDir = "C:\\Temp\\cyberforge-challenge-010-ad-enum"
+
+          if (Test-Path $WorkDir) { Remove-Item -Recurse -Force $WorkDir }
+
+          git clone --depth 1 $RepoUrl $WorkDir
+
+          Set-Location "$WorkDir\\challenges\\challenge-010-ad-enum"
+
+          powershell -ExecutionPolicy Bypass -File .\\setup.ps1'

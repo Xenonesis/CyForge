@@ -1,0 +1,13 @@
+id: challenge-004-linux-privesc
+name: Linux Privilege Escalation Basics
+description: Training lab for misconfigured privilege boundaries and escalation paths in Linux.
+tactic: privilege-escalation
+technique:
+  attack_id: T1548.001
+  name: Setuid and Setgid
+platforms:
+  linux:
+    sh:
+      command: |
+        echo "Preparing challenge-004-linux-privesc"
+        ./setup.sh

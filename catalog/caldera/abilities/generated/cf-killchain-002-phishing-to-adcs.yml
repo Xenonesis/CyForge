@@ -1,0 +1,39 @@
+- id: cf-killchain-002-phishing-to-adcs
+  name: CyberForge Deploy Phishing, Lateral Movement, ADCS Abuse
+  description: Deploy killchain-002-phishing-to-adcs from GitLab content.
+  tactic: execution
+  technique:
+    attack_id: T1059.001
+    name: PowerShell
+  platforms:
+    linux:
+      sh:
+        command: 'set -e
+
+          REPO_URL="${REPO_URL:-https://gitlab.example.com/cyberforge/cyberforge-content.git}"
+
+          WORKDIR="/tmp/cyberforge-killchain-002-phishing-to-adcs"
+
+          if [ -d "$WORKDIR" ]; then rm -rf "$WORKDIR"; fi
+
+          git clone --depth 1 "$REPO_URL" "$WORKDIR"
+
+          cd "$WORKDIR/killchains/killchain-002-phishing-to-adcs"
+
+          chmod +x setup.sh
+
+          ./setup.sh'
+    windows:
+      psh:
+        command: '$RepoUrl = if ($env:REPO_URL) { $env:REPO_URL } else { "https://gitlab.example.com/cyberforge/cyberforge-content.git"
+          }
+
+          $WorkDir = "C:\\Temp\\cyberforge-killchain-002-phishing-to-adcs"
+
+          if (Test-Path $WorkDir) { Remove-Item -Recurse -Force $WorkDir }
+
+          git clone --depth 1 $RepoUrl $WorkDir
+
+          Set-Location "$WorkDir\\killchains\\killchain-002-phishing-to-adcs"
+
+          powershell -ExecutionPolicy Bypass -File .\\setup.ps1'

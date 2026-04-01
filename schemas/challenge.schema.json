@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CyberForge Challenge Definition",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "description",
+    "tactic",
+    "technique",
+    "platforms"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 3
+    },
+    "name": {
+      "type": "string",
+      "minLength": 3
+    },
+    "description": {
+      "type": "string",
+      "minLength": 3
+    },
+    "tactic": {
+      "type": "string",
+      "minLength": 2
+    },
+    "technique": {
+      "type": "object",
+      "required": ["attack_id", "name"],
+      "properties": {
+        "attack_id": {
+          "type": "string",
+          "pattern": "^T[0-9]{4}(\\.[0-9]{3})?$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 2
+        }
+      },
+      "additionalProperties": false
+    },
+    "platforms": {
+      "type": "object",
+      "minProperties": 1,
+      "patternProperties": {
+        "^(linux|windows)$": {
+          "type": "object",
+          "minProperties": 1,
+          "patternProperties": {
+            "^(sh|psh|powershell)$": {
+              "type": "object",
+              "required": ["command"],
+              "properties": {
+                "command": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": true
+}

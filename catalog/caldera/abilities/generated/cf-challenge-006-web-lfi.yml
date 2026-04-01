@@ -1,0 +1,25 @@
+- id: cf-challenge-006-web-lfi
+  name: CyberForge Deploy Local File Inclusion Exploitation
+  description: Deploy challenge-006-web-lfi from GitLab content.
+  tactic: collection
+  technique:
+    attack_id: T1005
+    name: Data from Local System
+  platforms:
+    linux:
+      sh:
+        command: 'set -e
+
+          REPO_URL="${REPO_URL:-https://gitlab.example.com/cyberforge/cyberforge-content.git}"
+
+          WORKDIR="/tmp/cyberforge-challenge-006-web-lfi"
+
+          if [ -d "$WORKDIR" ]; then rm -rf "$WORKDIR"; fi
+
+          git clone --depth 1 "$REPO_URL" "$WORKDIR"
+
+          cd "$WORKDIR/challenges/challenge-006-web-lfi"
+
+          chmod +x setup.sh
+
+          ./setup.sh'

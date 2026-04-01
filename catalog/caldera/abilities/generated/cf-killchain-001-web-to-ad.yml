@@ -1,0 +1,39 @@
+- id: cf-killchain-001-web-to-ad
+  name: CyberForge Deploy Web Pivot to Domain Compromise
+  description: Deploy killchain-001-web-to-ad from GitLab content.
+  tactic: execution
+  technique:
+    attack_id: T1059.004
+    name: Unix Shell
+  platforms:
+    linux:
+      sh:
+        command: 'set -e
+
+          REPO_URL="${REPO_URL:-https://gitlab.example.com/cyberforge/cyberforge-content.git}"
+
+          WORKDIR="/tmp/cyberforge-killchain-001-web-to-ad"
+
+          if [ -d "$WORKDIR" ]; then rm -rf "$WORKDIR"; fi
+
+          git clone --depth 1 "$REPO_URL" "$WORKDIR"
+
+          cd "$WORKDIR/killchains/killchain-001-web-to-ad"
+
+          chmod +x setup.sh
+
+          ./setup.sh'
+    windows:
+      psh:
+        command: '$RepoUrl = if ($env:REPO_URL) { $env:REPO_URL } else { "https://gitlab.example.com/cyberforge/cyberforge-content.git"
+          }
+
+          $WorkDir = "C:\\Temp\\cyberforge-killchain-001-web-to-ad"
+
+          if (Test-Path $WorkDir) { Remove-Item -Recurse -Force $WorkDir }
+
+          git clone --depth 1 $RepoUrl $WorkDir
+
+          Set-Location "$WorkDir\\killchains\\killchain-001-web-to-ad"
+
+          powershell -ExecutionPolicy Bypass -File .\\setup.ps1'

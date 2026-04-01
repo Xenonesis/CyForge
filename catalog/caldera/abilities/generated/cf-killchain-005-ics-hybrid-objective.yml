@@ -1,0 +1,39 @@
+- id: cf-killchain-005-ics-hybrid-objective
+  name: CyberForge Deploy Hybrid IT/OT Intrusion to Objective
+  description: Deploy killchain-005-ics-hybrid-objective from GitLab content.
+  tactic: impact
+  technique:
+    attack_id: T0831
+    name: Manipulation of Control
+  platforms:
+    linux:
+      sh:
+        command: 'set -e
+
+          REPO_URL="${REPO_URL:-https://gitlab.example.com/cyberforge/cyberforge-content.git}"
+
+          WORKDIR="/tmp/cyberforge-killchain-005-ics-hybrid-objective"
+
+          if [ -d "$WORKDIR" ]; then rm -rf "$WORKDIR"; fi
+
+          git clone --depth 1 "$REPO_URL" "$WORKDIR"
+
+          cd "$WORKDIR/killchains/killchain-005-ics-hybrid-objective"
+
+          chmod +x setup.sh
+
+          ./setup.sh'
+    windows:
+      psh:
+        command: '$RepoUrl = if ($env:REPO_URL) { $env:REPO_URL } else { "https://gitlab.example.com/cyberforge/cyberforge-content.git"
+          }
+
+          $WorkDir = "C:\\Temp\\cyberforge-killchain-005-ics-hybrid-objective"
+
+          if (Test-Path $WorkDir) { Remove-Item -Recurse -Force $WorkDir }
+
+          git clone --depth 1 $RepoUrl $WorkDir
+
+          Set-Location "$WorkDir\\killchains\\killchain-005-ics-hybrid-objective"
+
+          powershell -ExecutionPolicy Bypass -File .\\setup.ps1'

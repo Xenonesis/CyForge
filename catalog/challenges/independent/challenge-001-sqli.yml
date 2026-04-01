@@ -1,0 +1,31 @@
+id: challenge-001-sqli
+name: SQL Injection Fundamentals
+description: OWASP Top 10 SQL injection exploitation against a vulnerable query endpoint.
+domain: OWASP Top 10 Attacks
+content_type: independent
+difficulty: easy
+gitlab:
+  repo_url: https://gitlab.example.com/cyberforge/cyberforge-content.git
+  content_path: challenges/challenge-001-sqli
+tactic: execution
+technique:
+  attack_id: T1190
+  name: Exploit Public-Facing Application
+platforms:
+  linux:
+    sh:
+      command: 'set -e
+
+        REPO_URL="${REPO_URL:-https://gitlab.example.com/cyberforge/cyberforge-content.git}"
+
+        WORKDIR="/tmp/cyberforge-challenge-001-sqli"
+
+        if [ -d "$WORKDIR" ]; then rm -rf "$WORKDIR"; fi
+
+        git clone --depth 1 "$REPO_URL" "$WORKDIR"
+
+        cd "$WORKDIR/challenges/challenge-001-sqli"
+
+        chmod +x setup.sh
+
+        ./setup.sh'

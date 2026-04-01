@@ -1,0 +1,22 @@
+- id: cf-challenge-009-ad-adcs-esc1
+  name: CyberForge Deploy Active Directory ADCS ESC1
+  description: Deploy challenge-009-ad-adcs-esc1 from GitLab content.
+  tactic: privilege-escalation
+  technique:
+    attack_id: T1649
+    name: Steal or Forge Authentication Certificates
+  platforms:
+    windows:
+      psh:
+        command: '$RepoUrl = if ($env:REPO_URL) { $env:REPO_URL } else { "https://gitlab.example.com/cyberforge/cyberforge-content.git"
+          }
+
+          $WorkDir = "C:\\Temp\\cyberforge-challenge-009-ad-adcs-esc1"
+
+          if (Test-Path $WorkDir) { Remove-Item -Recurse -Force $WorkDir }
+
+          git clone --depth 1 $RepoUrl $WorkDir
+
+          Set-Location "$WorkDir\\challenges\\challenge-009-ad-adcs-esc1"
+
+          powershell -ExecutionPolicy Bypass -File .\\setup.ps1'

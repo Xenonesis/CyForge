@@ -1,0 +1,39 @@
+- id: cf-killchain-004-supply-chain-domain
+  name: CyberForge Deploy Supply Chain Compromise to Domain Control
+  description: Deploy killchain-004-supply-chain-domain from GitLab content.
+  tactic: execution
+  technique:
+    attack_id: T1195
+    name: Supply Chain Compromise
+  platforms:
+    linux:
+      sh:
+        command: 'set -e
+
+          REPO_URL="${REPO_URL:-https://gitlab.example.com/cyberforge/cyberforge-content.git}"
+
+          WORKDIR="/tmp/cyberforge-killchain-004-supply-chain-domain"
+
+          if [ -d "$WORKDIR" ]; then rm -rf "$WORKDIR"; fi
+
+          git clone --depth 1 "$REPO_URL" "$WORKDIR"
+
+          cd "$WORKDIR/killchains/killchain-004-supply-chain-domain"
+
+          chmod +x setup.sh
+
+          ./setup.sh'
+    windows:
+      psh:
+        command: '$RepoUrl = if ($env:REPO_URL) { $env:REPO_URL } else { "https://gitlab.example.com/cyberforge/cyberforge-content.git"
+          }
+
+          $WorkDir = "C:\\Temp\\cyberforge-killchain-004-supply-chain-domain"
+
+          if (Test-Path $WorkDir) { Remove-Item -Recurse -Force $WorkDir }
+
+          git clone --depth 1 $RepoUrl $WorkDir
+
+          Set-Location "$WorkDir\\killchains\\killchain-004-supply-chain-domain"
+
+          powershell -ExecutionPolicy Bypass -File .\\setup.ps1'

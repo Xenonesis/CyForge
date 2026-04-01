@@ -1,0 +1,25 @@
+- id: cf-challenge-014-waf-bypass
+  name: CyberForge Deploy WAF Bypass Payload Evasion
+  description: Deploy challenge-014-waf-bypass from GitLab content.
+  tactic: defense-evasion
+  technique:
+    attack_id: T1562
+    name: Impair Defenses
+  platforms:
+    linux:
+      sh:
+        command: 'set -e
+
+          REPO_URL="${REPO_URL:-https://gitlab.example.com/cyberforge/cyberforge-content.git}"
+
+          WORKDIR="/tmp/cyberforge-challenge-014-waf-bypass"
+
+          if [ -d "$WORKDIR" ]; then rm -rf "$WORKDIR"; fi
+
+          git clone --depth 1 "$REPO_URL" "$WORKDIR"
+
+          cd "$WORKDIR/challenges/challenge-014-waf-bypass"
+
+          chmod +x setup.sh
+
+          ./setup.sh'

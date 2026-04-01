@@ -1,0 +1,39 @@
+- id: cf-killchain-003-vpn-breach-ransomware
+  name: CyberForge Deploy VPN Breach to Ransomware Objective
+  description: Deploy killchain-003-vpn-breach-ransomware from GitLab content.
+  tactic: impact
+  technique:
+    attack_id: T1486
+    name: Data Encrypted for Impact
+  platforms:
+    linux:
+      sh:
+        command: 'set -e
+
+          REPO_URL="${REPO_URL:-https://gitlab.example.com/cyberforge/cyberforge-content.git}"
+
+          WORKDIR="/tmp/cyberforge-killchain-003-vpn-breach-ransomware"
+
+          if [ -d "$WORKDIR" ]; then rm -rf "$WORKDIR"; fi
+
+          git clone --depth 1 "$REPO_URL" "$WORKDIR"
+
+          cd "$WORKDIR/killchains/killchain-003-vpn-breach-ransomware"
+
+          chmod +x setup.sh
+
+          ./setup.sh'
+    windows:
+      psh:
+        command: '$RepoUrl = if ($env:REPO_URL) { $env:REPO_URL } else { "https://gitlab.example.com/cyberforge/cyberforge-content.git"
+          }
+
+          $WorkDir = "C:\\Temp\\cyberforge-killchain-003-vpn-breach-ransomware"
+
+          if (Test-Path $WorkDir) { Remove-Item -Recurse -Force $WorkDir }
+
+          git clone --depth 1 $RepoUrl $WorkDir
+
+          Set-Location "$WorkDir\\killchains\\killchain-003-vpn-breach-ransomware"
+
+          powershell -ExecutionPolicy Bypass -File .\\setup.ps1'

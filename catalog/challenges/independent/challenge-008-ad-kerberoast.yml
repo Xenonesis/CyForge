@@ -1,0 +1,29 @@
+id: challenge-008-ad-kerberoast
+name: Active Directory Kerberoasting
+description: Enumerate SPNs and perform Kerberoasting against weak service account
+  passwords.
+domain: AD Attacks
+content_type: independent
+difficulty: hard
+gitlab:
+  repo_url: https://gitlab.example.com/cyberforge/cyberforge-content.git
+  content_path: challenges/challenge-008-ad-kerberoast
+tactic: credential-access
+technique:
+  attack_id: T1558.003
+  name: Kerberoasting
+platforms:
+  windows:
+    psh:
+      command: '$RepoUrl = if ($env:REPO_URL) { $env:REPO_URL } else { "https://gitlab.example.com/cyberforge/cyberforge-content.git"
+        }
+
+        $WorkDir = "C:\\Temp\\cyberforge-challenge-008-ad-kerberoast"
+
+        if (Test-Path $WorkDir) { Remove-Item -Recurse -Force $WorkDir }
+
+        git clone --depth 1 $RepoUrl $WorkDir
+
+        Set-Location "$WorkDir\\challenges\\challenge-008-ad-kerberoast"
+
+        powershell -ExecutionPolicy Bypass -File .\\setup.ps1'

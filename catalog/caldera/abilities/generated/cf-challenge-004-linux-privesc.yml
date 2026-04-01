@@ -1,0 +1,25 @@
+- id: cf-challenge-004-linux-privesc
+  name: CyberForge Deploy Linux SUID Privilege Escalation
+  description: Deploy challenge-004-linux-privesc from GitLab content.
+  tactic: privilege-escalation
+  technique:
+    attack_id: T1548.001
+    name: Setuid and Setgid
+  platforms:
+    linux:
+      sh:
+        command: 'set -e
+
+          REPO_URL="${REPO_URL:-https://gitlab.example.com/cyberforge/cyberforge-content.git}"
+
+          WORKDIR="/tmp/cyberforge-challenge-004-linux-privesc"
+
+          if [ -d "$WORKDIR" ]; then rm -rf "$WORKDIR"; fi
+
+          git clone --depth 1 "$REPO_URL" "$WORKDIR"
+
+          cd "$WORKDIR/challenges/challenge-004-linux-privesc"
+
+          chmod +x setup.sh
+
+          ./setup.sh'
